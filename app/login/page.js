@@ -37,6 +37,11 @@ export default function Login() {
     }
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser();
+  };
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
@@ -48,7 +53,12 @@ export default function Login() {
 
   if (user) {
     console.log(user);
-    return <div>{user.name} is logged in</div>;
+    return (
+      <div>
+        <div>{user.name} is logged in</div>
+        <button onClick={handleLogout}>Log out</button>
+      </div>
+    );
   }
 
   return (
