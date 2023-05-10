@@ -14,24 +14,17 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await axios
-        .post("http://localhost:3001/api/login", {
-          username,
-          password,
-        })
-        .then((res) => {
-          if (res.data.user) {
-            console.log(res.data);
-            setUser(res.data.user);
-            localStorage.setItem("user", JSON.stringify(res.data.user));
-            // push("/");
-          } else {
-            console.log("No user found!");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const res = await axios.post("http://localhost:3001/api/login", {
+        username,
+        password,
+      });
+      if (res.data.user) {
+        console.log(res.data);
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      } else {
+        console.log("No user found!");
+      }
     } catch (err) {
       console.log(err);
     }

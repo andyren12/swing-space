@@ -15,24 +15,18 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await axios
-        .post("http://localhost:3001/api/register", {
-          name,
-          email,
-          phone,
-          password,
-        })
-        .then((res) => {
-          if (res.data) {
-            console.log(res.data);
-            push("/");
-          } else {
-            console.log("bad");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const res = await axios.post("http://localhost:3001/api/register", {
+        name,
+        email,
+        phone,
+        password,
+      });
+      if (res.data) {
+        console.log(res.data);
+        push("/");
+      } else {
+        console.log("bad");
+      }
     } catch (err) {
       console.log(err);
     }
