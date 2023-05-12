@@ -10,20 +10,19 @@ export default function Login() {
   const [user, setUser] = useState();
   const { push } = useRouter();
 
-  async function handleSubmit(e) {
+  async function handleLogin(e) {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3001/api/login", {
+      const session = await axios.post("http://localhost:3001/api/login", {
         username,
         password,
       });
-      if (res.data.user) {
-        console.log(res.data);
-        setUser(res.data.user);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (session.data.user.verified) {
+        setUser(session.data.user);
+        localStorage.setItem("user", JSON.stringify(session.data.user));
       } else {
-        console.log("No user found!");
+        console.log("Account is not verified!");
       }
     } catch (err) {
       console.log(err);
@@ -48,7 +47,7 @@ export default function Login() {
     console.log(user);
     return (
       <div>
-        <div>{user.name} is logged in</div>
+        <div>{user.firstName} is logged in</div>
         <button onClick={handleLogout}>Log out</button>
       </div>
     );
@@ -65,7 +64,7 @@ export default function Login() {
           gap: "20px",
         }}
         action="POST"
-        onSubmit={handleSubmit}
+        onSubmit={handleLogin}
       >
         <input
           type="text"
