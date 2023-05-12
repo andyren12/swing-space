@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Login() {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const { push } = useRouter();
 
@@ -15,14 +15,14 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3001/api/register", {
-        name,
+      const user = await axios.post("http://localhost:3001/api/register", {
+        firstName,
+        lastName,
         email,
-        phone,
         password,
       });
-      if (res.data) {
-        console.log(res.data);
+      if (user.data) {
+        console.log(user.data);
         push("/");
       } else {
         console.log("bad");
@@ -48,9 +48,16 @@ export default function Login() {
         <input
           type="text"
           onChange={(e) => {
-            setName(e.target.value);
+            setFirstName(e.target.value);
           }}
-          placeholder="name"
+          placeholder="first name"
+        />
+        <input
+          type="text"
+          onChange={(e) => {
+            setLastName(e.target.value);
+          }}
+          placeholder="last name"
         />
         <input
           type="text"
@@ -58,13 +65,6 @@ export default function Login() {
             setEmail(e.target.value);
           }}
           placeholder="email"
-        />
-        <input
-          type="text"
-          onChange={(e) => {
-            setPhone(e.target.value);
-          }}
-          placeholder="phone"
         />
         <input
           type="password"
