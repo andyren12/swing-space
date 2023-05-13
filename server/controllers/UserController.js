@@ -2,6 +2,8 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
@@ -18,7 +20,7 @@ const register = (req, res) => {
           id: user._id,
           email: user.email,
         },
-        "secret",
+        process.env.EMAIL_TOKEN_SECRET,
         { expiresIn: "1h" }
       );
       email.sendEmail(req.body.email, emailToken);
@@ -114,7 +116,10 @@ const refreshToken = (req, res) => {
 
 const verify = async (req, res) => {
   try {
-    const decoded = jwt.verify(req.body.emailToken, "secret");
+    const decoded = jwt.verify(
+      req.body.emailToken,
+      process.env.EMAIL_TOKEN_SECRET
+    );
     if (decoded) {
       let user = await User.findOneAndUpdate(
         { _id: decoded.id },

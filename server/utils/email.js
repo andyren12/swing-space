@@ -7,16 +7,16 @@ async function sendEmail(email, token) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "andyren33@gmail.com",
-        pass: "jzwrhqnegmfhqcrm",
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
 
     await transporter.sendMail({
       from: "andyren33@gmail.com",
       to: email,
-      subject: "Email Verification",
-      html: `http://localhost:3000/verify/${token}`,
+      subject: "Verify Your Swingspace Account",
+      html: `${process.env.BASE_URL}/verify/${token}`,
     });
 
     console.log("Email sent successfully");
