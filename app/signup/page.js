@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function Login() {
+export default function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function Login() {
         console.log(user.data);
         push("/");
       } else {
-        console.log("bad");
+        console.log("No user found!");
       }
     } catch (err) {
       console.log(err);
