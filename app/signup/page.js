@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function Login() {
-  const [name, setName] = useState("");
+export default function Signup() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const { push } = useRouter();
 
@@ -15,24 +15,18 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await axios
-        .post("http://localhost:3001/api/register", {
-          name,
-          email,
-          phone,
-          password,
-        })
-        .then((res) => {
-          if (res.data) {
-            console.log(res.data);
-            push("/");
-          } else {
-            console.log("bad");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const user = await axios.post("http://localhost:3001/api/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+      if (user.data) {
+        console.log(user.data);
+        push("/");
+      } else {
+        console.log("No user found!");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -54,9 +48,16 @@ export default function Login() {
         <input
           type="text"
           onChange={(e) => {
-            setName(e.target.value);
+            setFirstName(e.target.value);
           }}
-          placeholder="name"
+          placeholder="first name"
+        />
+        <input
+          type="text"
+          onChange={(e) => {
+            setLastName(e.target.value);
+          }}
+          placeholder="last name"
         />
         <input
           type="text"
@@ -64,13 +65,6 @@ export default function Login() {
             setEmail(e.target.value);
           }}
           placeholder="email"
-        />
-        <input
-          type="text"
-          onChange={(e) => {
-            setPhone(e.target.value);
-          }}
-          placeholder="phone"
         />
         <input
           type="password"
