@@ -8,6 +8,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState();
+  const [isVerified, setIsVerified] = useState(false);
   const { push } = useRouter();
 
   async function handleLogin(e) {
@@ -22,6 +23,7 @@ export default function Login() {
         setUser(session.data.user);
         localStorage.setItem("user", JSON.stringify(session.data.user));
       } else {
+        setIsVerified(true);
         console.log("Account is not verified!");
       }
     } catch (err) {
@@ -82,6 +84,14 @@ export default function Login() {
         />
         <input type="submit" />
       </form>
+      <div>{isVerified ? "" : "Account is not verified"}</div>
+      <button
+        onClick={() => {
+          push("/");
+        }}
+      >
+        Back
+      </button>
     </div>
   );
 }
