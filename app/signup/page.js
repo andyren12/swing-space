@@ -9,6 +9,7 @@ export default function Signup() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userExists, setUserExists] = useState(false);
   const { push } = useRouter();
 
   async function handleSubmit(e) {
@@ -20,12 +21,13 @@ export default function Signup() {
         lastName,
         email,
         password,
+        role: "student",
       });
-      if (user.data) {
+      if (user.data.message === "User already exists") {
+        setUserExists(true);
+      } else {
         console.log(user.data);
         push("/");
-      } else {
-        console.log("No user found!");
       }
     } catch (err) {
       console.log(err);
@@ -75,6 +77,14 @@ export default function Signup() {
         />
         <input type="submit" />
       </form>
+      <div>{userExists ? "A user with this email already exists!" : ""}</div>
+      <button
+        onClick={() => {
+          push("/");
+        }}
+      >
+        Back
+      </button>
     </div>
   );
 }
