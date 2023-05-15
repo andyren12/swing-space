@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const EmployeeRoute = require("./routes/employee");
 const UserRoute = require("./routes/user");
 
 mongoose.connect("mongodb://localhost:27017/swingspace", {
@@ -38,5 +37,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.use("/api/employee", EmployeeRoute);
 app.use("/api", UserRoute);

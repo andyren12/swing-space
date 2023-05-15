@@ -21,6 +21,13 @@ export default function Home() {
       >
         Sign up
       </button>
+      <button
+        onClick={() => {
+          push("/coachsignup");
+        }}
+      >
+        Coach sign up
+      </button>
     </main>
   );
 }

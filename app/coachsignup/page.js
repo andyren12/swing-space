@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function Signup() {
+export default function CoachSignup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ export default function Signup() {
         lastName,
         email,
         password,
-        role: "student",
+        role: "coach",
       });
       if (user.data.message === "User already exists") {
         setUserExists(true);

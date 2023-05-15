@@ -8,26 +8,39 @@ dotenv.config();
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
     try {
-      let user = await new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+      let exists = await User.findOne({
         email: req.body.email,
-        password: hashedPass,
-      }).save();
-
-      const emailToken = jwt.sign(
-        {
-          id: user._id,
-          email: user.email,
-        },
-        process.env.EMAIL_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
-      email.sendEmail(req.body.email, emailToken);
-
-      res.json({
-        message: "An email has been sent to your account for verification!",
       });
+
+      if (exists) {
+        res.json({
+          message: "User already exists",
+        });
+      } else {
+        let user = await new User({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          role: req.body.role,
+          password: hashedPass,
+        }).save();
+
+        if (user) {
+          const emailToken = jwt.sign(
+            {
+              id: user._id,
+              email: user.email,
+            },
+            process.env.EMAIL_TOKEN_SECRET,
+            { expiresIn: "1h" }
+          );
+          email.sendEmail(req.body.email, emailToken);
+
+          res.json({
+            message: "An email has been sent to your account for verification!",
+          });
+        }
+      }
     } catch (err) {
       res.json({
         message: "An error occured!",
