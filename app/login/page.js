@@ -8,6 +8,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   let session = useSession();
   const { push } = useRouter();
 
@@ -20,21 +21,23 @@ export default function Login() {
         email,
         password,
       });
+      switch (data.status) {
+        case 401: {
+          setMessage("Your username or password is incorrect");
+          break;
+        }
+        case 200: {
+          push("/dashboard");
+          break;
+        }
+        default:
+      }
       if (data?.user) {
         session = useSession();
       }
     } catch (err) {
       console.log(err);
     }
-  }
-
-  if (session?.status === "authenticated") {
-    return (
-      <div>
-        <div>{session.data?.user.email} is logged in</div>
-        <button onClick={signOut}>Logout</button>
-      </div>
-    );
   }
 
   return (
@@ -66,7 +69,8 @@ export default function Login() {
         />
         <input type="submit" />
       </form>
-      <button onClick={signOut}>Logout</button>
+      <button onClick={signOut}>Log out</button>
+      <div>{message}</div>
       <button
         onClick={() => {
           push("/");
