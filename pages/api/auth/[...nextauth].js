@@ -10,13 +10,14 @@ export default NextAuth({
   providers: [
     CredentialsProvider({
       async authorize(credentials, req) {
-        const { email, password } = credentials;
+        const { email, password, role } = credentials;
 
         const response = await axios.post(
           `${process.env.SERVER_URI}api/login`,
           {
             email,
             password,
+            role,
           }
         );
 

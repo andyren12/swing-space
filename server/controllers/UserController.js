@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Coach = require("../models/Coach");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
@@ -6,22 +7,26 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const register = (req, res) => {
+  const Model = req.body.role === "student" ? User : Coach;
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
     try {
-      let exists = await User.findOne({
-        email: req.body.email,
-      });
+      const exists =
+        (await User.findOne({
+          email: req.body.email,
+        })) ||
+        (await Coach.findOne({
+          email: req.body.email,
+        }));
 
       if (exists) {
         res.json({
           message: "User already exists",
         });
       } else {
-        let user = await new User({
+        let user = await new Model({
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email,
-          role: req.body.role,
           password: hashedPass,
         }).save();
 
@@ -30,6 +35,7 @@ const register = (req, res) => {
             {
               id: user._id,
               email: user.email,
+              role: req.body.role,
             },
             process.env.EMAIL_TOKEN_SECRET,
             { expiresIn: "1h" }
@@ -50,26 +56,33 @@ const register = (req, res) => {
 };
 
 const login = async (req, res) => {
+  const Model = req.body.role === "student" ? User : Coach;
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({
+    const user = await Model.findOne({
       email,
     });
     if (user) {
       bcrypt.compare(password, user.password, function (err, result) {
-        if (err) {
-          res.json({
-            error: err,
-          });
-        }
         if (result) {
-          res.json({
-            message: "Login successful",
-            user,
-          });
+          if (user.verified === false) {
+            res.json({
+              message: "User is not verified",
+            });
+          } else {
+            res.json({
+              message: "Login successful",
+              user,
+            });
+          }
         } else {
           res.json({
             message: "Password is incorrect!",
+          });
+        }
+        if (err) {
+          res.json({
+            error: err,
           });
         }
       });
@@ -83,35 +96,6 @@ const login = async (req, res) => {
   }
 };
 
-const refreshToken = (req, res) => {
-  const refreshToken = req.body.refreshToken;
-  jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET,
-    function (err, decoded) {
-      if (err) {
-        res.status(400).json({
-          err,
-        });
-      } else {
-        let accessToken = jwt.sign(
-          { name: decoded.name },
-          process.env.ACCESS_TOKEN_SECRET,
-          {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME,
-          }
-        );
-        let refreshToken = req.body.refreshToken;
-        res.status(200).json({
-          message: "Token refreshed successfully!",
-          accessToken,
-          refreshToken,
-        });
-      }
-    }
-  );
-};
-
 const verify = async (req, res) => {
   try {
     const decoded = jwt.verify(
@@ -119,7 +103,8 @@ const verify = async (req, res) => {
       process.env.EMAIL_TOKEN_SECRET
     );
     if (decoded) {
-      let user = await User.findOneAndUpdate(
+      const Model = decoded.role === "student" ? User : Coach;
+      let user = await Model.findOneAndUpdate(
         { _id: decoded.id },
         { verified: true }
       );
@@ -137,9 +122,66 @@ const verify = async (req, res) => {
   }
 };
 
+const subscribe = async (req, res) => {
+  try {
+    if (req.body.id !== req.params.id) {
+      const user = await User.findById(req.body.id);
+      const coach = await Coach.findById(req.params.id);
+      const exists = user.subscriptions.filter((sub) => {
+        return sub.email === coach.email;
+      });
+      if (exists) {
+        res.json({
+          message: "You already subscribe",
+        });
+      } else {
+        if (user && coach) {
+          const userUpdate = await User.findOneAndUpdate({
+            _id: user._id,
+            $push: {
+              subscriptions: {
+                name: `${coach.firstName} ${coach.lastName}`,
+                email: `${coach.email}`,
+              },
+            },
+          });
+          const coachUpdate = await Coach.updateOne({
+            _id: coach._id,
+            $push: {
+              students: {
+                name: `${user.firstName} ${user.lastName}`,
+                email: `${user.email}`,
+              },
+            },
+          });
+          if (userUpdate && coachUpdate) {
+            res.json({
+              message: "Subscribed successfully",
+            });
+          } else {
+            res.json({
+              message: "Error",
+            });
+          }
+        } else {
+          res.json({
+            message: "Coach not found",
+          });
+        }
+      }
+    } else {
+      res.json({
+        message: "Cannot subscribe to self",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   register,
   login,
-  refreshToken,
   verify,
+  subscribe,
 };

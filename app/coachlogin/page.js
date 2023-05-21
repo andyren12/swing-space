@@ -20,7 +20,7 @@ export default function Login() {
         redirect: false,
         email,
         password,
-        role: "student",
+        role: "coach",
       });
 
       switch (data.status) {

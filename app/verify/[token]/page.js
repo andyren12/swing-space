@@ -16,7 +16,6 @@ export default function Verify({ params }) {
         }
       );
       if (response) {
-        console.log(response);
         if (response.status === 200) {
           setIsValidToken(true);
         }
