@@ -4,30 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function CoachSignup() {
+export default function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userExists, setUserExists] = useState(false);
+  const [user, setUser] = useState();
   const { push } = useRouter();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const user = await axios.post("http://localhost:3001/api/register", {
+      const user = await axios.post(`${process.env.SERVER_URI}api/register`, {
         firstName,
         lastName,
         email,
         password,
         role: "coach",
       });
-      if (user.data.message === "User already exists") {
-        setUserExists(true);
-      } else {
-        console.log(user.data);
-        push("/");
+      if (user) {
+        setUser(user);
       }
     } catch (err) {
       console.log(err);
@@ -77,7 +74,7 @@ export default function CoachSignup() {
         />
         <input type="submit" />
       </form>
-      <div>{userExists ? "A user with this email already exists!" : ""}</div>
+      <div>{user?.data?.message}</div>
       <button
         onClick={() => {
           push("/");

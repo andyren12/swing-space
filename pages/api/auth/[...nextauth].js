@@ -20,9 +20,9 @@ export default NextAuth({
           }
         );
 
-        const user = response?.data?.user;
-        if (user) {
-          return user;
+        const data = response?.data;
+        if (data.user) {
+          return data;
         }
       },
     }),
@@ -36,7 +36,7 @@ export default NextAuth({
       return token;
     },
     session: async ({ session, token }) => {
-      session.user = token.user;
+      session = token.user;
       return session;
     },
   },

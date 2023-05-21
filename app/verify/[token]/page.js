@@ -8,7 +8,7 @@ export default function Verify({ params }) {
   const [isValidToken, setIsValidToken] = useState(false);
 
   useEffect(() => {
-    async function verify() {
+    async function verifyToken() {
       const response = await axios.post(
         `${process.env.SERVER_URI}api/verify/${token}`,
         {
@@ -22,6 +22,7 @@ export default function Verify({ params }) {
         }
       }
     }
+    verifyToken();
   }, [token]);
 
   return (
