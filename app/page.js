@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import "./globals.css";
 
 export default function Home() {
   const { push } = useRouter();
   return (
-    <main>
+    <main className="flex justify-center">
       <button
         onClick={() => {
           push("/login");
