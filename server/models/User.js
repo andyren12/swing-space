@@ -23,10 +23,8 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    role: {
-      type: String,
-      enum: ["student", "coach", "admin"],
-      required: true,
+    subscriptions: {
+      type: Array,
     },
     avatar: {
       type: String,
