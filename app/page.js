@@ -1,12 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import styles from "./page.module.css";
 
 export default function Home() {
   const { push } = useRouter();
   return (
-    <main className={styles.main}>
+    <main>
       <button
         onClick={() => {
           push("/login");
@@ -27,6 +26,13 @@ export default function Home() {
         }}
       >
         Coach sign up
+      </button>
+      <button
+        onClick={() => {
+          push("/dashboard");
+        }}
+      >
+        Dashboard
       </button>
     </main>
   );
