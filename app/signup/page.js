@@ -16,14 +16,14 @@ export default function Signup() {
     e.preventDefault();
 
     try {
-      const user = await axios.post("http://localhost:3001/api/register", {
+      const user = await axios.post(`${process.env.SERVER_URI}api/register`, {
         firstName,
         lastName,
         email,
         password,
         role: "student",
       });
-      if (user.data.message === "User already exists") {
+      if (user?.data?.message === "User already exists") {
         setUserExists(true);
       } else {
         console.log(user.data);

@@ -51,11 +51,10 @@ const register = (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({
-      email: username,
+      email,
     });
-
     if (user) {
       bcrypt.compare(password, user.password, function (err, result) {
         if (err) {
@@ -64,23 +63,9 @@ const login = async (req, res) => {
           });
         }
         if (result) {
-          let token = jwt.sign(
-            { email: user.email },
-            process.env.ACCESS_TOKEN_SECRET,
-            {
-              expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME,
-            }
-          );
-          let refreshtoken = jwt.sign(
-            { email: user.email },
-            process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME }
-          );
           res.json({
-            message: "Login Successful!",
+            message: "Login successful",
             user,
-            token,
-            refreshtoken,
           });
         } else {
           res.json({
@@ -109,17 +94,17 @@ const refreshToken = (req, res) => {
           err,
         });
       } else {
-        let token = jwt.sign(
+        let accessToken = jwt.sign(
           { name: decoded.name },
           process.env.ACCESS_TOKEN_SECRET,
           {
-            expiresIn: "60s",
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME,
           }
         );
         let refreshToken = req.body.refreshToken;
         res.status(200).json({
           message: "Token refreshed successfully!",
-          token,
+          accessToken,
           refreshToken,
         });
       }

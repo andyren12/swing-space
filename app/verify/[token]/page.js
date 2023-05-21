@@ -8,9 +8,9 @@ export default function Verify({ params }) {
   const [isValidToken, setIsValidToken] = useState(false);
 
   useEffect(() => {
-    async function verifyEmailToken() {
+    async function verify() {
       const response = await axios.post(
-        `http://localhost:3001/api/verify/${token}`,
+        `${process.env.SERVER_URI}api/verify/${token}`,
         {
           emailToken: token,
         }
@@ -22,7 +22,6 @@ export default function Verify({ params }) {
         }
       }
     }
-    verifyEmailToken();
   }, [token]);
 
   return (

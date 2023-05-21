@@ -2,55 +2,37 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState();
-  const [isVerified, setIsVerified] = useState(false);
+  let session = useSession();
   const { push } = useRouter();
 
   async function handleLogin(e) {
     e.preventDefault();
 
     try {
-      const session = await axios.post("http://localhost:3001/api/login", {
-        username,
+      const data = await signIn("credentials", {
+        redirect: false,
+        email,
         password,
       });
-      if (session.data.user.verified) {
-        setUser(session.data.user);
-        localStorage.setItem("user", JSON.stringify(session.data.user));
-      } else {
-        setIsVerified(true);
-        console.log("Account is not verified!");
+      if (data?.user) {
+        session = useSession();
       }
     } catch (err) {
       console.log(err);
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser();
-  };
-
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("user");
-    if (loggedInUser) {
-      const foundUser = JSON.parse(loggedInUser);
-      setUser(foundUser);
-      console.log(loggedInUser);
-    }
-  }, []);
-
-  if (user) {
-    console.log(user);
+  if (session?.status === "authenticated") {
     return (
       <div>
-        <div>{user.firstName} is logged in</div>
-        <button onClick={handleLogout}>Log out</button>
+        <div>{session.data?.user.email} is logged in</div>
+        <button onClick={signOut}>Logout</button>
       </div>
     );
   }
@@ -71,9 +53,9 @@ export default function Login() {
         <input
           type="text"
           onChange={(e) => {
-            setUsername(e.target.value);
+            setEmail(e.target.value);
           }}
-          placeholder="username"
+          placeholder="email"
         />
         <input
           type="password"
@@ -84,7 +66,7 @@ export default function Login() {
         />
         <input type="submit" />
       </form>
-      <div>{isVerified ? "" : "Account is not verified"}</div>
+      <button onClick={signOut}>Logout</button>
       <button
         onClick={() => {
           push("/");
