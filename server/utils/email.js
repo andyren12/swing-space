@@ -16,7 +16,7 @@ async function sendEmail(email, token) {
       from: "andyren33@gmail.com",
       to: email,
       subject: "Verify Your Swingspace Account",
-      html: `${process.env.BASE_URL}/verify/${token}`,
+      html: `${process.env.BASE_URL}verify/${token}`,
     });
 
     console.log("Email sent successfully");

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema(
+const coachSchema = new Schema(
   {
     firstName: {
       type: String,
@@ -26,6 +26,9 @@ const userSchema = new Schema(
     subscriptions: {
       type: Array,
     },
+    students: {
+      type: Array,
+    },
     avatar: {
       type: String,
     },
@@ -33,5 +36,5 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const Coach = mongoose.model("Coach", coachSchema);
+module.exports = Coach;
