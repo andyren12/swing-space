@@ -26,7 +26,6 @@ const register = (req, res) => {
         if (user) {
           const emailToken = jwt.sign(
             {
-              id: user._id,
               email: user.email,
               role: req.body.role,
             },
@@ -90,12 +89,12 @@ const login = async (req, res) => {
 const verify = async (req, res) => {
   try {
     const decoded = jwt.verify(
-      req.body.emailToken,
+      req.params.token,
       process.env.EMAIL_TOKEN_SECRET
     );
     if (decoded) {
       let user = await User.findOneAndUpdate(
-        { _id: decoded.id },
+        { email: decoded.email },
         { verified: true }
       );
 
