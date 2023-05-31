@@ -9,7 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const { data: session } = useSession();
+  let session = useSession();
   const { push } = useRouter();
 
   async function handleLogin(e) {
@@ -20,7 +20,7 @@ export default function Login() {
         redirect: false,
         email,
         password,
-        role: "student",
+        role: "coach",
       });
 
       switch (data.status) {
@@ -33,6 +33,9 @@ export default function Login() {
           break;
         }
         default:
+      }
+      if (data?.user) {
+        session = useSession();
       }
     } catch (err) {
       console.log(err);

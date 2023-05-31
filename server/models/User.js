@@ -19,14 +19,20 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    verified: {
-      type: Boolean,
-      default: false,
-    },
     role: {
       type: String,
       enum: ["student", "coach", "admin"],
       required: true,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    subscriptions: {
+      type: Array,
+    },
+    students: {
+      type: Array,
     },
     avatar: {
       type: String,
