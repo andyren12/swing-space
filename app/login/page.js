@@ -9,7 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  let session = useSession();
+  const { data: session } = useSession();
   const { push } = useRouter();
 
   async function handleLogin(e) {
@@ -33,9 +33,6 @@ export default function Login() {
           break;
         }
         default:
-      }
-      if (data?.user) {
-        session = useSession();
       }
     } catch (err) {
       console.log(err);

@@ -5,8 +5,9 @@ import "./globals.css";
 
 export default function Home() {
   const { push } = useRouter();
+
   return (
-    <main className="flex justify-center">
+    <main className="flex justify-center items-center gap-4 h-screen">
       <button
         onClick={() => {
           push("/login");
@@ -20,6 +21,13 @@ export default function Home() {
         }}
       >
         Sign up
+      </button>
+      <button
+        onClick={() => {
+          push("/coachlogin");
+        }}
+      >
+        Coach login
       </button>
       <button
         onClick={() => {

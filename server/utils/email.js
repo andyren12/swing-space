@@ -1,5 +1,3 @@
-const dotenv = require("dotenv");
-dotenv.config();
 const nodemailer = require("nodemailer");
 
 async function sendEmail(email, token) {
