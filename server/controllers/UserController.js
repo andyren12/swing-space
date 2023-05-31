@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
 const dotenv = require("dotenv");
+const Upload = require("../models/Upload");
+const { getSession } = require("next-auth/react");
 dotenv.config();
 
 const register = (req, res) => {
@@ -65,16 +67,17 @@ const login = async (req, res) => {
     if (user) {
       bcrypt.compare(password, user.password, function (err, result) {
         if (result) {
-          if (user.verified === false) {
-            res.json({
-              message: "User is not verified",
-            });
-          } else {
-            res.json({
-              message: "Login successful",
-              user,
-            });
-          }
+          // if (user.verified === false) {
+          //   res.json({
+          //     message: "User is not verified",
+          //   });
+          // } else {
+
+          res.json({
+            message: "Login successful",
+            user,
+          });
+          // }
         } else {
           res.json({
             message: "Password is incorrect!",
@@ -179,9 +182,33 @@ const subscribe = async (req, res) => {
   }
 };
 
+const getCoachIDArray = async (req, res) => {
+  // const session = await getSession({ req });
+
+  try {
+    let uploadArr = [];
+    req.body.ids.forEach((id) => {
+      uploadArr.push(
+        new Promise(async (resolve, reject) => {
+          const upload = await Upload.findById(id);
+          if (upload.path) {
+            resolve(upload.path);
+          } else {
+            res.json({ message: "error" });
+          }
+        }) //ERROR HANDLING NOT WORKING HERE FIX PLEASE
+      );
+    });
+    res.json(await Promise.all(uploadArr));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   register,
   login,
   verify,
   subscribe,
+  getCoachIDArray,
 };

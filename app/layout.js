@@ -2,6 +2,7 @@
 import "./globals.css";
 import Navbar from "./Navbar";
 import { Inter } from "next/font/google";
+import { ChakraProvider } from "@chakra-ui/react";
 
 import { SessionProvider } from "next-auth/react";
 
@@ -11,10 +12,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
-          <Navbar />
-          {children}
-        </SessionProvider>
+        <ChakraProvider>
+          <SessionProvider>
+            <Navbar />
+            {children}
+          </SessionProvider>
+        </ChakraProvider>
       </body>
     </html>
   );

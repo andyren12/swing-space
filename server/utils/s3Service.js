@@ -10,7 +10,8 @@ exports.s3Uploadv3 = async (file) => {
       Body: file.buffer,
     };
     const command = new PutObjectCommand(param);
-    const response = await s3.send(command);
+    let response = await s3.send(command);
+    response = { ...response, name: param.Key };
     return response;
   }
 };

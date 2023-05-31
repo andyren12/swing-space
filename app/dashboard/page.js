@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const { push } = useRouter();
-  let session = useSession();
+  const { data: session } = useSession();
   let arr = [];
-  if (session?.data) {
-    arr = Object.entries(session.data.user);
+  if (session) {
+    arr = Object.entries(session?.user);
   }
   return (
     <div>
