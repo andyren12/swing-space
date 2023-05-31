@@ -7,5 +7,6 @@ router.post("/register", UserController.register);
 router.post("/login", UserController.login);
 router.post("/verify/:token", UserController.verify);
 router.post("/subscribe/:id", UserController.subscribe);
+router.post("/getCoachID", UserController.getCoachIDArray);
 
 module.exports = router;
