@@ -6,38 +6,37 @@ import axios from "axios";
 export default NextAuth({
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60,
   },
   providers: [
     CredentialsProvider({
       async authorize(credentials, req) {
-        const { email, password, role } = credentials;
+        const { email, password } = credentials;
 
-        const response = await axios.post(
-          `${process.env.SERVER_URI}api/login`,
-          {
-            email,
-            password,
-            role,
-          }
-        );
+        const res = await axios.post(`${process.env.SERVER_URI}api/login`, {
+          email,
+          password,
+        });
 
-        const data = response?.data;
-        if (data.user) {
-          return data;
-        }
+        const user = res.data;
+        if (user) {
+          return user;
+        } else return null;
       },
     }),
   ],
   pages: {
     signIn: "/login",
   },
+  jwt: {
+    maxAge: 60 * 60,
+  },
   callbacks: {
     jwt: async ({ token, user }) => {
-      user && (token.user = user);
-      return token;
+      return { ...token, ...user };
     },
     session: async ({ session, token }) => {
-      session = token.user;
+      session = token;
       return session;
     },
   },

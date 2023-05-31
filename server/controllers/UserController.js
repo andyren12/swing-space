@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const Coach = require("../models/Coach");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
@@ -9,27 +8,23 @@ const { getSession } = require("next-auth/react");
 dotenv.config();
 
 const register = (req, res) => {
-  const Model = req.body.role === "student" ? User : Coach;
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
     try {
-      const exists =
-        (await User.findOne({
-          email: req.body.email,
-        })) ||
-        (await Coach.findOne({
-          email: req.body.email,
-        }));
+      const exists = await User.findOne({
+        email: req.body.email,
+      });
 
       if (exists) {
         res.json({
           message: "User already exists",
         });
       } else {
-        let user = await new Model({
+        let user = await new User({
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email,
           password: hashedPass,
+          role: req.body.role,
         }).save();
 
         if (user) {
@@ -58,10 +53,9 @@ const register = (req, res) => {
 };
 
 const login = async (req, res) => {
-  const Model = req.body.role === "student" ? User : Coach;
   try {
     const { email, password } = req.body;
-    const user = await Model.findOne({
+    const user = await User.findOne({
       email,
     });
     if (user) {
@@ -106,8 +100,7 @@ const verify = async (req, res) => {
       process.env.EMAIL_TOKEN_SECRET
     );
     if (decoded) {
-      const Model = decoded.role === "student" ? User : Coach;
-      let user = await Model.findOneAndUpdate(
+      let user = await User.findOneAndUpdate(
         { _id: decoded.id },
         { verified: true }
       );
@@ -129,7 +122,13 @@ const subscribe = async (req, res) => {
   try {
     if (req.body.id !== req.params.id) {
       const user = await User.findById(req.body.id);
-      const coach = await Coach.findById(req.params.id);
+      const coach = await User.findById(req.params.id);
+
+      if (coach.role !== "coach") {
+        res.json({
+          message: "Not a coach",
+        });
+      }
       const exists = user.subscriptions.filter((sub) => {
         return sub.email === coach.email;
       });
@@ -148,7 +147,7 @@ const subscribe = async (req, res) => {
               },
             },
           });
-          const coachUpdate = await Coach.updateOne({
+          const coachUpdate = await User.updateOne({
             _id: coach._id,
             $push: {
               students: {

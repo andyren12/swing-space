@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
@@ -11,8 +11,8 @@ export default function Dashboard() {
     arr = Object.entries(session?.user);
   }
   return (
-    <div>
-      Dashboard
+    <div className="flex flex-col items-center justify-center gap-3">
+      <div>Dashboard</div>
       {arr.map((entry, index) => {
         return (
           <div key={index}>
@@ -26,6 +26,13 @@ export default function Dashboard() {
         }}
       >
         Home
+      </button>
+      <button
+        onClick={() => {
+          signOut();
+        }}
+      >
+        Log out
       </button>
     </div>
   );
