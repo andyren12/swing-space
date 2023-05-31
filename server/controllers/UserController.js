@@ -2,10 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
-const dotenv = require("dotenv");
 const Upload = require("../models/Upload");
-const { getSession } = require("next-auth/react");
-dotenv.config();
 
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
