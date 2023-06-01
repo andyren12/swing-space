@@ -18,6 +18,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/navigation";
 
 const Links = ["Dashboard", "Projects", "Team"];
 
@@ -37,6 +38,7 @@ const NavLink = (props) => (
 export default function Simple() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = useSession();
+  const { push } = useRouter();
 
   return (
     <>

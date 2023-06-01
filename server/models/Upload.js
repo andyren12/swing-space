@@ -5,7 +5,7 @@ const uploadSchema = new Schema(
   {
     title: {
       type: String,
-      required: true,
+      // required: true,
     },
     path: {
       type: String,
