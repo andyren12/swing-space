@@ -1,9 +1,14 @@
 const express = require("express");
 const router = express.Router();
-// const upload = require("../middleware/coachProfile");
+const upload = require("../middleware/videoUpload");
 
 const CoachProfileController = require("../controllers/CoachProfileController");
 
 router.post("/create-profile", CoachProfileController.createProfile);
+router.post(
+  "/upload-video",
+  upload.single("file"),
+  CoachProfileController.upload
+);
 
 module.exports = router;

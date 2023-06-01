@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Box, Button, Heading } from "@chakra-ui/react";
-import UploadButton from "@/components/UploadButton";
 import ReactPlayer from "react-player";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import CreateCoachProfileButton from "@/components/CreateCoachProfileButton";
+import UploadToCourseButton from "@/components/UploadToCourseButton";
 
 const page = () => {
   const [listCourses, setListCourses] = useState([]);
@@ -45,7 +45,7 @@ const page = () => {
   return (
     <Box textAlign="center">
       <Heading>Your Videos</Heading>
-      <UploadButton />
+      <UploadToCourseButton />
       <CreateCoachProfileButton />
       {listCourses.map((videoID, index) => (
         <ReactPlayer

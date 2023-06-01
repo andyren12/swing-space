@@ -31,8 +31,6 @@ const createProfile = async (req, res) => {
         });
       }
     }
-    
-    
   } catch (err) {
     console.log(err);
   }
@@ -41,25 +39,31 @@ const createProfile = async (req, res) => {
 const upload = async (req, res) => {
   const file = req.file;
   const result = await s3Uploadv3(file);
+  console.log(req.body.id);
   try {
-    const profile = await new CoachProfile({
-      courses: [
-        {
-          name: "Course 1",
-          sections: [
-            {
-              sectionTitle: "Section 1",
-              videos: [
-                {
-                  videoTitle: req.body.name,
-                  videoPath: result.name,
-                },
-              ],
-            },
-          ],
+    const profile = await CoachProfile.updateOne(
+      {
+        coachID: req.body.id,
+      },
+      {
+        $push: {
+          "courses.$[i].sections.$[j].videos": {
+            videoTitle: req.body.name,
+            videoPath: result.name,
+          },
         },
-      ],
-    }).save();
+      },
+      {
+        arrayFilters: [
+          {
+            "i.name": "Course 1",
+          },
+          {
+            "j.sectionTitle": "Section 1",
+          },
+        ],
+      }
+    );
 
     if (profile) {
       res.json({
