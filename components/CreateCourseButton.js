@@ -1,10 +1,20 @@
 import { useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { Button, Input } from "@chakra-ui/react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 
-const CreateCourseButton = () => {
+const CreateCourseButton = (props) => {
   const [title, setTitle] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = useSession();
 
   const handleTitleChange = (e) => {
@@ -12,33 +22,48 @@ const CreateCourseButton = () => {
   };
 
   const createCourseHandler = async () => {
-    const formData = new FormData();
-    formData.append("title", title);
+    // const formData = new FormData();
+    // formData.append("courseName", title);
+    // formData.append("coachID", session.user.user._id.toString());
     // formData.append("email", session.user.email);
 
+    onClose();
+
     const response = await axios.post(
-      "http://localhost:3001/upload/file",
-      formData
+      "http://localhost:3001/coach-dashboard/create-course",
+      {
+        coachID: session.user.user._id.toString(),
+        courseName: title,
+      }
     );
+
+    if (response.status === 200) {
+      // Refetch the courses after successful course creation
+      props.fetchCourses();
+    }
 
     // fetch("/upload/file", {
     //   method: "POST",
     //   body: formData,
     // });
-
-    if (response.data.message === "success") {
-      alert("File uploaded successfully");
-    } else {
-      alert("File upload failed");
-    }
   };
 
   return (
     <>
-      <Input type="text" onChange={handleTitleChange}>
-        Course Title
-      </Input>
-      <Button onClick={createCourseHandler}>Create a Course</Button>
+      <Button onClick={onOpen}>Create a Course</Button>
+      <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create a New Course</ModalHeader>
+          <ModalCloseButton />
+          <Input
+            type="text"
+            onChange={handleTitleChange}
+            placeholder="Course Title"
+          />
+          <Button onClick={createCourseHandler}>Create a Course</Button>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
