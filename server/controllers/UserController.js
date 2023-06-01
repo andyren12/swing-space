@@ -117,49 +117,48 @@ const verify = async (req, res) => {
 const subscribe = async (req, res) => {
   try {
     if (req.body.id !== req.params.id) {
-      const user = await User.findById(req.body.id);
+      const student = await User.findById(req.body.id);
       const coach = await User.findById(req.params.id);
 
       if (coach.role !== "coach") {
         res.json({
           message: "Not a coach",
         });
-      }
-      const exists = user.subscriptions.filter((sub) => {
-        return sub.email === coach.email;
-      });
-      if (exists) {
-        res.json({
-          message: "You already subscribe",
-        });
       } else {
-        if (user && coach) {
-          const userUpdate = await User.findOneAndUpdate({
-            _id: user._id,
-            $push: {
-              subscriptions: {
-                name: `${coach.firstName} ${coach.lastName}`,
-                email: `${coach.email}`,
-              },
-            },
+        if (student && coach) {
+          console.log(student.subscriptions);
+          const subscribes = student.subscriptions.filter((sub) => {
+            return sub.id.equals(coach._id);
           });
-          const coachUpdate = await User.updateOne({
-            _id: coach._id,
-            $push: {
-              students: {
-                name: `${user.firstName} ${user.lastName}`,
-                email: `${user.email}`,
-              },
-            },
-          });
-          if (userUpdate && coachUpdate) {
+
+          if (subscribes) {
             res.json({
-              message: "Subscribed successfully",
+              message: "You already subscribe",
             });
           } else {
-            res.json({
-              message: "Error",
+            const studentUpdate = await User.findByIdAndUpdate(student._id, {
+              $push: {
+                subscriptions: {
+                  id: coach._id,
+                },
+              },
             });
+            const coachUpdate = await User.findByIdAndUpdate(coach._id, {
+              $push: {
+                students: {
+                  id: student._id,
+                },
+              },
+            });
+            if (studentUpdate && coachUpdate) {
+              res.json({
+                message: "Subscribed successfully",
+              });
+            } else {
+              res.json({
+                message: "Could not subscribe",
+              });
+            }
           }
         } else {
           res.json({
