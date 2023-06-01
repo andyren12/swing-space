@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import React from "react";
 import {
   Box,
@@ -37,9 +37,10 @@ const NavLink = (props) => (
 
 export default function Simple() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: session } = useSession();
+  const session = getSession();
   const { push } = useRouter();
 
+  console.log(session);
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>

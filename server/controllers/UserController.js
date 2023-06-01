@@ -64,7 +64,6 @@ const login = async (req, res) => {
           // } else {
 
           res.json({
-            message: "Login successful",
             user,
           });
           // }
@@ -131,11 +130,12 @@ const subscribe = async (req, res) => {
             return sub.id.equals(coach._id);
           });
 
-          if (subscribes) {
-            res.json({
-              message: "You already subscribe",
-            });
-          } else {
+          // if (subscribes) {
+          //   res.json({
+          //     message: "You already subscribe",
+          //   });
+          // } else
+          {
             const studentUpdate = await User.findByIdAndUpdate(student._id, {
               $push: {
                 subscriptions: {
@@ -176,24 +176,76 @@ const subscribe = async (req, res) => {
   }
 };
 
-const getCoachIDArray = async (req, res) => {
-  // const session = await getSession({ req });
-
+const unsubscribe = async (req, res) => {
   try {
-    let uploadArr = [];
-    req.body.ids.forEach((id) => {
-      uploadArr.push(
-        new Promise(async (resolve, reject) => {
-          const upload = await Upload.findById(id);
-          if (upload.path) {
-            resolve(upload.path);
+    if (req.body.id !== req.params.id) {
+      const student = await User.findById(req.body.id);
+      const coach = await User.findById(req.params.id);
+
+      if (coach.role !== "coach") {
+        res.json({
+          message: "Not a coach",
+        });
+      } else {
+        if (student && coach) {
+          const subscribes = student.subscriptions.filter((sub) => {
+            return sub.id.equals(coach._id);
+          });
+
+          if (!subscribes) {
+            res.json({
+              message: "You don't subscribe",
+            });
           } else {
-            res.json({ message: "error" });
+            const studentUpdate = await User.findByIdAndUpdate(student._id, {
+              $pull: {
+                subscriptions: {
+                  id: coach._id,
+                },
+              },
+            });
+            const coachUpdate = await User.findByIdAndUpdate(coach._id, {
+              $pull: {
+                students: {
+                  id: student._id,
+                },
+              },
+            });
+            if (studentUpdate && coachUpdate) {
+              res.json({
+                message: "Unsubscribed successfully",
+              });
+            } else {
+              res.json({
+                message: "Could not unsubscribe",
+              });
+            }
           }
-        }) //ERROR HANDLING NOT WORKING HERE FIX PLEASE
-      );
-    });
-    res.json(await Promise.all(uploadArr));
+        } else {
+          res.json({
+            message: "Coach not found",
+          });
+        }
+      }
+    } else {
+      res.json({
+        message: "Cannot unsubscribe to self",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getAccount = async (req, res) => {
+  try {
+    console.log(req.params.id);
+    const user = await User.findById(req.params.id);
+    if (user)
+      res.json({
+        message: "Get successful",
+        user,
+      });
   } catch (err) {
     console.log(err);
   }
@@ -204,5 +256,6 @@ module.exports = {
   login,
   verify,
   subscribe,
-  getCoachIDArray,
+  unsubscribe,
+  getAccount,
 };

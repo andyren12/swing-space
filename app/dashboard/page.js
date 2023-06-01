@@ -14,9 +14,12 @@ export default function Dashboard() {
     <div className="flex flex-col items-center justify-center gap-3">
       <div>Dashboard</div>
       {arr.map((entry, index) => {
+        if (Array.isArray(entry[1])) {
+          return;
+        }
         return (
           <div key={index}>
-            {entry[0]}: {entry[1]}
+            {entry[0]}:{entry[1]}
           </div>
         );
       })}
