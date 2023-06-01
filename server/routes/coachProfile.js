@@ -10,5 +10,6 @@ router.post(
   upload.single("file"),
   CoachProfileController.upload
 );
+router.get("/get-courses", CoachProfileController.getCoursesByCoachID);
 
 module.exports = router;

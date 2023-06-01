@@ -75,7 +75,31 @@ const upload = async (req, res) => {
   }
 };
 
+const getCoursesByCoachID = async (req, res) => {
+  const { coachID } = req.query;
+
+  if (!coachID) {
+    return res.status(400).json({ message: "Missing coach ID" });
+  }
+
+  try {
+    // Find the coach profile using the coach ID
+    const profile = await CoachProfile.findOne({ coachID });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Coach not found" });
+    }
+
+    // Send the courses of the coach as the response
+    res.json(profile.courses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   upload,
   createProfile,
+  getCoursesByCoachID,
 };

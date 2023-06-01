@@ -38,9 +38,25 @@ const page = () => {
   //   }
   // }, [session]);
 
-  function createCourseHandler() {
-    fefraf;
-  }
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const coachID = "647678a8ef4004ca0f573214"; // replace with actual coachID
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/coach-dashboard/get-courses",
+          {
+            params: {
+              coachID: coachID,
+            },
+          }
+        );
+        setListCourses(response.data);
+      } catch (error) {
+        console.error(error.response.data); // Assuming that an error message is returned in the response body
+      }
+    };
+    fetchCourses();
+  }, []);
 
   return (
     <Box textAlign="center">
@@ -48,11 +64,17 @@ const page = () => {
       <UploadToCourseButton />
       <CreateCoachProfileButton />
       {listCourses.map((videoID, index) => (
-        <ReactPlayer
-          key={index}
-          url={`https://d1edznew70prql.cloudfront.net/` + videoID}
-          controls={true}
-        />
+        <>
+          <p key={index}>{videoID.name}</p>
+          <ReactPlayer
+            key={index}
+            url={
+              `https://d1edznew70prql.cloudfront.net/` +
+              videoID.sections[0].videos[0].videoPath
+            }
+            controls={true}
+          />
+        </>
       ))}
     </Box>
   );
