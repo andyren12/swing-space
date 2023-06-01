@@ -31,12 +31,11 @@ const UploadButton = () => {
       formData
     );
 
-    console.log(response);
     // fetch("/upload/file", {
     //   method: "POST",
     //   body: formData,
     // });
-
+    console.log(response);
     if (response.data.message === "success") {
       alert("File uploaded successfully");
     } else {

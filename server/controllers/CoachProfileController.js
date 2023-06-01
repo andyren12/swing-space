@@ -1,41 +1,44 @@
 const multer = require("multer");
-const Upload = require("../models/Upload");
 const CoachProfile = require("../models/CoachProfile");
 const { s3Uploadv3 } = require("../utils/s3Service");
 const User = require("../models/User");
 
+// const createCourse = async (req, res) => {
+//   const title = req.body.title;
+//   try {
+//     const course = await
+//   }
+// };
+
+const createProfile = async (req, res) => {
+  try {
+    const exists = await CoachProfile.findOne({
+      coachID: req.body.id,
+    });
+
+    if (exists) {
+      res.json({
+        message: "User already exists",
+      });
+    } else {
+      const profile = await new CoachProfile({
+        coachID: req.body.id,
+      }).save();
+
+      if (profile) {
+        res.json({
+          message: "success",
+        });
+      }
+    }
+    
+    
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const upload = async (req, res) => {
-  // const file = req.file;
-  // const result = await s3Uploadv3(file);
-  // try {
-  //   const upload = await new Upload({
-  //     title: req.body.name,
-  //     path: result.name,
-  //   }).save();
-  //   console.log(file);
-
-  //   if (upload) {
-  //     const user = await User.findOneAndUpdate({
-  //       email: req.body.email,
-  //       $push: {
-  //         subscriptions: upload._id.toString(),
-  //       },
-  //     });
-
-  //     if (user) {
-  //       res.json({
-  //         message: "success",
-  //         result,
-  //       });
-  //     } else {
-  //       res.json({
-  //         message: "failed",
-  //       });
-  //     }
-  //   }
-  // } catch (err) {
-  //   console.log(err);
-  // }
   const file = req.file;
   const result = await s3Uploadv3(file);
   try {
@@ -70,4 +73,5 @@ const upload = async (req, res) => {
 
 module.exports = {
   upload,
+  createProfile,
 };

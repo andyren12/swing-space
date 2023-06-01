@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, Button, Heading } from "@chakra-ui/react";
 import UploadButton from "@/components/UploadButton";
 import ReactPlayer from "react-player";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import CreateCoachProfileButton from "@/components/CreateCoachProfileButton";
 
 const page = () => {
   const [listCourses, setListCourses] = useState([]);
@@ -14,34 +15,38 @@ const page = () => {
     arr = session.user.subscriptions;
   }
 
-  useEffect(() => {
-    const fetchFilePaths = async () => {
-      try {
-        const response = await axios.post(
-          `${process.env.SERVER_URI}api/getCoachID`,
-          {
-            ids: arr,
-          }
-        );
-        // const response = await axios.get(`${process.env.SERVER_URI}api/getCoachID`)
+  // useEffect(() => {
+  //   const fetchFilePaths = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         `${process.env.SERVER_URI}api/getCoachID`,
+  //         {
+  //           ids: arr,
+  //         }
+  //       );
+  //       // const response = await axios.get(`${process.env.SERVER_URI}api/getCoachID`)
 
-        if (response) {
-          setListCourses(response.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    if (session) {
-      fetchFilePaths();
-    }
-  }, [session]);
+  //       if (response) {
+  //         setListCourses(response.data);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   if (session) {
+  //     fetchFilePaths();
+  //   }
+  // }, [session]);
 
-  console.log(arr);
+  function createCourseHandler() {
+    fefraf;
+  }
+
   return (
     <Box textAlign="center">
       <Heading>Your Videos</Heading>
       <UploadButton />
+      <CreateCoachProfileButton />
       {listCourses.map((videoID, index) => (
         <ReactPlayer
           key={index}
