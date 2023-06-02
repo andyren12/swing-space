@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const subscriptionSchema = new Schema({
-  studentID: {
+  studentId: {
     type: String,
     required: true,
   },
-  coachID: {
+  coachId: {
     type: String,
     required: true,
   },

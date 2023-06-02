@@ -3,14 +3,16 @@ const User = require("../models/User");
 
 const subscribe = async (req, res) => {
   try {
-    if (req.body.id !== req.params.id) {
+    const { studentId, coachId } = req.body;
+
+    if (studentId !== coachId) {
       const exists = await Subscription.findOne({
-        studentID: req.body.id,
-        coachID: req.params.id,
+        studentId,
+        coachId,
       });
 
-      const student = await User.findById(req.body.id);
-      const coach = await User.findById(req.params.id);
+      const student = await User.findById(studentId);
+      const coach = await User.findById(coachId);
 
       if (exists) {
         res.json({
@@ -20,8 +22,8 @@ const subscribe = async (req, res) => {
         if (student && coach) {
           if (coach.role === "coach") {
             const subscription = await new Subscription({
-              studentID: req.body.id,
-              coachID: req.params.id,
+              studentId,
+              coachId,
             }).save();
 
             if (subscription) {
@@ -56,15 +58,17 @@ const subscribe = async (req, res) => {
 
 const unsubscribe = async (req, res) => {
   try {
-    if (req.body.id !== req.params.id) {
-      const student = await User.findById(req.body.id);
-      const coach = await User.findById(req.params.id);
+    const { studentId, coachId } = req.query;
+
+    if (coachId !== studentId) {
+      const student = await User.findById(studentId);
+      const coach = await User.findById(coachId);
 
       if (student && coach) {
         if (coach.role === "coach") {
           const subscription = await Subscription.findOneAndDelete({
-            studentID: req.body.id,
-            coachID: req.params.id,
+            studentId,
+            coachId,
           });
           if (subscription) {
             res.json({
@@ -95,7 +99,26 @@ const unsubscribe = async (req, res) => {
   }
 };
 
+const get = async (req, res) => {
+  const { coachId, studentId } = req.query;
+  const subscription = await Subscription.findOne({
+    coachId,
+    studentId,
+  });
+
+  if (subscription) {
+    res.json({
+      subscription,
+    });
+  } else {
+    res.json({
+      message: "No subscription found",
+    });
+  }
+};
+
 module.exports = {
   subscribe,
   unsubscribe,
+  get,
 };

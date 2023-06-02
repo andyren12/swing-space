@@ -11,15 +11,31 @@ export default function Profile({ params }) {
   const { id } = params;
   const [account, setAccount] = useState(null);
   const [subscribed, setSubscribed] = useState(false);
-  const { data: session, update } = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const getAccount = async () => {
       const res = await axios.get(`${process.env.SERVER_URI}api/get/${id}`);
       setAccount(res.data);
     };
+
+    if (status === "authenticated") {
+      const getSubscription = async () => {
+        const res = await axios.get(`${process.env.SERVER_URI}subscribe/get`, {
+          params: {
+            coachId: id,
+            studentId: session.user._id.toString(),
+          },
+        });
+        if (res.data.subscription) {
+          setSubscribed(true);
+        }
+      };
+      getSubscription();
+    }
+
     getAccount();
-  }, [id]);
+  }, [id, status, session?.user?._id]);
 
   let arr = [];
   if (account) {
@@ -41,6 +57,7 @@ export default function Profile({ params }) {
       {account?.user.role === "coach" && (
         <CoachProfile id={account.user._id.toString()} />
       )}
+      {subscribed && "Boobs"}
     </Box>
   );
 }

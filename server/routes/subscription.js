@@ -3,7 +3,8 @@ const router = express.Router();
 
 const SubscriptionController = require("../controllers/SubscriptionController");
 
-router.post("/add/:id", SubscriptionController.subscribe);
-router.post("/remove/:id", SubscriptionController.unsubscribe);
+router.post("/add", SubscriptionController.subscribe);
+router.delete("/remove", SubscriptionController.unsubscribe);
+router.get("/get", SubscriptionController.get);
 
 module.exports = router;

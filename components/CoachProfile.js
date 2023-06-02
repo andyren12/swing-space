@@ -3,31 +3,30 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 
 const CoachProfile = ({ id }) => {
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const handleSubscribe = async () => {
-    const res = await axios.post(
-      `${process.env.SERVER_URI}api/subscribe/${id}`,
-      {
-        id: session?.user._id.toString(),
-      }
-    );
+    const res = await axios.post(`${process.env.SERVER_URI}subscribe/add`, {
+      coachId: id,
+      studentId: session?.user._id.toString(),
+    });
     if (res) {
       console.log(res);
-      update();
     }
   };
 
   const handleUnsubscribe = async () => {
     console.log(session);
-    const res = await axios.post(
-      `${process.env.SERVER_URI}api/unsubscribe/${id}`,
+    const res = await axios.delete(
+      `${process.env.SERVER_URI}subscribe/remove`,
       {
-        id: session?.user._id.toString(),
+        params: {
+          studentId: session?.user._id.toString(),
+          coachId: id,
+        },
       }
     );
     if (res) {
       console.log(res);
-      update();
     }
   };
 
