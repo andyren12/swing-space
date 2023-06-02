@@ -43,6 +43,7 @@ export default function Home() {
       >
         Dashboard
       </button>
+      <button onClick={() => push("/coaches")}>Coach list</button>
     </main>
   );
 }

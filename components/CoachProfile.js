@@ -10,7 +10,7 @@ const CoachProfile = ({ id }) => {
       studentId: session?.user._id.toString(),
     });
     if (res) {
-      console.log(res);
+      window.location.reload();
     }
   };
 
@@ -26,7 +26,7 @@ const CoachProfile = ({ id }) => {
       }
     );
     if (res) {
-      console.log(res);
+      window.location.reload();
     }
   };
 

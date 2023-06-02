@@ -115,7 +115,6 @@ const verify = async (req, res) => {
 
 const getAccount = async (req, res) => {
   try {
-    console.log(req.params.id);
     const user = await User.findById(req.params.id);
     if (user)
       res.json({
@@ -127,9 +126,31 @@ const getAccount = async (req, res) => {
   }
 };
 
+const getCoaches = async (req, res) => {
+  try {
+    const coaches = await User.find({
+      role: "coach",
+    });
+
+    if (coaches) {
+      res.json({
+        coaches,
+        message: "Success",
+      });
+    } else {
+      res.json({
+        message: "No coaches found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   register,
   login,
   verify,
   getAccount,
+  getCoaches,
 };
