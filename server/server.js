@@ -9,7 +9,8 @@ dotenv.config();
 
 const UserRoute = require("./routes/user");
 const UploadRoute = require("./routes/upload");
-const CoachProfileRoute = require("./routes/coachProfile")
+const CoachProfileRoute = require("./routes/coachProfile");
+const SubscriptionRoute = require("./routes/subscription");
 
 mongoose.connect("mongodb://localhost:27017", {
   useNewUrlParser: true,
@@ -42,3 +43,4 @@ app.listen(PORT, () => {
 app.use("/api", UserRoute);
 app.use("/upload", UploadRoute);
 app.use("/coach-dashboard", CoachProfileRoute);
+app.use("/subscribe", SubscriptionRoute);
