@@ -5,6 +5,7 @@ const email = require("../utils/email");
 const dotenv = require("dotenv");
 const Upload = require("../models/Upload");
 const { getSession } = require("next-auth/react");
+const VideoSession = require("../models/VideoSessions");
 dotenv.config();
 
 const register = (req, res) => {
@@ -204,10 +205,71 @@ const getCoachIDArray = async (req, res) => {
   }
 };
 
+const putWatchedVideo = async (req, res) => {
+  const userId = req.user.id; // Get user ID from authenticated user (req.user.id is just a placeholder, replace with your authentication system's way)
+  const videoId = req.params.id;
+
+  try {
+    // Find the UserVideo document
+    let userVideo = await UserVideo.findOne({ user: userId, video: videoId });
+
+    // If the UserVideo document doesn't exist, create a new one
+    if (!userVideo) {
+      userVideo = new VideoSession({
+        user: userID,
+        video: videoID,
+        watched: true,
+      });
+    } else {
+      // If it does exist, update the watched and watchedDate fields
+      userVideo.watched = true;
+    }
+
+    await userVideo.save();
+    res.json(userVideo);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+const getVideosWatchedByCoachIDAndCoachName = async (req, res) => {
+  const userId = req.user.id; // Get user ID from authenticated user
+  const courseId = req.params.courseId;
+
+  try {
+    // Find the Course document and populate the videos field
+    const course = await Course.findById(courseId).populate("videos");
+
+    if (!course) {
+      return res.status(404).json({ msg: "Course not found" });
+    }
+
+    // For each video, check if there's a corresponding UserVideo document
+    const videos = await Promise.all(
+      course.videos.map(async (video) => {
+        const userVideo = await UserVideo.findOne({
+          user: userId,
+          video: video._id,
+        });
+        const watched = !!userVideo && userVideo.watched;
+        return { ...video._doc, watched };
+      })
+    );
+
+    res.json(videos);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 module.exports = {
   register,
   login,
   verify,
   subscribe,
   getCoachIDArray,
+  putWatchedVideo,
+  getVideosWatchedByCoachIDAndCoachName,
 };

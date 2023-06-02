@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UploadToCourseButton from "./UploadToCourseButton";
 import CreateCourseButton from "./CreateCourseButton";
+import VideoList from "./VideoList";
 
 const CoachProfilePage = () => {
   const [listCourses, setListCourses] = useState([]);
@@ -29,15 +30,15 @@ const CoachProfilePage = () => {
 
   return (
     <Box>
-      <Heading>My Courses</Heading>
+      {/* <Heading>My Courses</Heading>
       <CreateCourseButton fetchCourses={fetchCourses} />
-      <UploadToCourseButton listCourses={listCourses} />
-      <SimpleGrid columns={3} spacing={5}>
-        {console.log(listCourses)}
+      <UploadToCourseButton listCourses={listCourses} /> */}
+      <VideoList listCourses={listCourses} />
+      {/* <SimpleGrid columns={3} spacing={5}>
         {listCourses.map((course, index) => (
           <Link key={index}>{course.name}</Link>
         ))}
-      </SimpleGrid>
+      </SimpleGrid> */}
     </Box>
   );
 };
