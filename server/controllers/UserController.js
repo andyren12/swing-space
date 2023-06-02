@@ -2,11 +2,9 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
-const dotenv = require("dotenv");
 const Upload = require("../models/Upload");
-const { getSession } = require("next-auth/react");
+const CoachProfile = require("../models/CoachProfile");
 const VideoSession = require("../models/VideoSessions");
-dotenv.config();
 
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
@@ -31,7 +29,6 @@ const register = (req, res) => {
         if (user) {
           const emailToken = jwt.sign(
             {
-              id: user._id,
               email: user.email,
               role: req.body.role,
             },
@@ -40,6 +37,17 @@ const register = (req, res) => {
           );
           email.sendEmail(req.body.email, emailToken);
 
+          if (user.role === "coach") {
+            const profile = await new CoachProfile({
+              coachID: user._id.toString(),
+            }).save();
+
+            if (!profile) {
+              res.json({
+                message: "No profile created",
+              });
+            }
+          }
           res.json({
             message: "An email has been sent to your account for verification!",
           });
@@ -69,7 +77,6 @@ const login = async (req, res) => {
           // } else {
 
           res.json({
-            message: "Login successful",
             user,
           });
           // }
@@ -97,12 +104,12 @@ const login = async (req, res) => {
 const verify = async (req, res) => {
   try {
     const decoded = jwt.verify(
-      req.body.emailToken,
+      req.params.token,
       process.env.EMAIL_TOKEN_SECRET
     );
     if (decoded) {
       let user = await User.findOneAndUpdate(
-        { _id: decoded.id },
+        { email: decoded.email },
         { verified: true }
       );
 
@@ -119,87 +126,35 @@ const verify = async (req, res) => {
   }
 };
 
-const subscribe = async (req, res) => {
+const getAccount = async (req, res) => {
   try {
-    if (req.body.id !== req.params.id) {
-      const user = await User.findById(req.body.id);
-      const coach = await User.findById(req.params.id);
-
-      if (coach.role !== "coach") {
-        res.json({
-          message: "Not a coach",
-        });
-      }
-      const exists = user.subscriptions.filter((sub) => {
-        return sub.email === coach.email;
-      });
-      if (exists) {
-        res.json({
-          message: "You already subscribe",
-        });
-      } else {
-        if (user && coach) {
-          const userUpdate = await User.findOneAndUpdate({
-            _id: user._id,
-            $push: {
-              subscriptions: {
-                name: `${coach.firstName} ${coach.lastName}`,
-                email: `${coach.email}`,
-              },
-            },
-          });
-          const coachUpdate = await User.updateOne({
-            _id: coach._id,
-            $push: {
-              students: {
-                name: `${user.firstName} ${user.lastName}`,
-                email: `${user.email}`,
-              },
-            },
-          });
-          if (userUpdate && coachUpdate) {
-            res.json({
-              message: "Subscribed successfully",
-            });
-          } else {
-            res.json({
-              message: "Error",
-            });
-          }
-        } else {
-          res.json({
-            message: "Coach not found",
-          });
-        }
-      }
-    } else {
+    const user = await User.findById(req.params.id);
+    if (user)
       res.json({
-        message: "Cannot subscribe to self",
+        message: "Get successful",
+        user,
       });
-    }
   } catch (err) {
     console.log(err);
   }
 };
 
-const getCoachIDArray = async (req, res) => {
-  // const session = await getSession({ req });
-
+const getCoaches = async (req, res) => {
   try {
-    let uploadArr = [];
-    req.body.ids.forEach((id) => {
-      uploadArr.push(
-        new Promise(async (resolve, reject) => {
-          const upload = await Upload.findById(id);
-          if (upload.path) {
-            resolve(upload.path);
-          } else {
-            res.json({ message: "error" });
-          }
-        }) //ERROR HANDLING NOT WORKING HERE FIX PLEASE
-      );
+    const coaches = await User.find({
+      role: "coach",
     });
-    res.json(await Promise.all(uploadArr));
+
+    if (coaches) {
+      res.json({
+        coaches,
+        message: "Success",
+      });
+    } else {
+      res.json({
+        message: "No coaches found",
+      });
+    }
   } catch (err) {
     console.log(err);
   }
@@ -268,8 +223,8 @@ module.exports = {
   register,
   login,
   verify,
-  subscribe,
-  getCoachIDArray,
+  getAccount,
+  getCoaches,
   putWatchedVideo,
   getVideosWatchedByCoachIDAndCoachName,
 };
