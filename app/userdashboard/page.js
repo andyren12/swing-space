@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import CreateCoachProfileButton from "@/components/CreateCoachProfileButton";
 import UploadToCourseButton from "@/components/UploadToCourseButton";
+import VideoList from "@/components/VideoList";
+import CoachProfilePage from "@/components/CoachProfilePage";
 
 const page = () => {
   const [listCourses, setListCourses] = useState([]);
@@ -38,29 +40,29 @@ const page = () => {
   //   }
   // }, [session]);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const coachID = "647678a8ef4004ca0f573214"; // replace with actual coachID
-      try {
-        const response = await axios.get(
-          "http://localhost:3001/coach-dashboard/get-courses",
-          {
-            params: {
-              coachID: coachID,
-            },
-          }
-        );
-        setListCourses(response.data);
-      } catch (error) {
-        console.error(error.response.data); // Assuming that an error message is returned in the response body
-      }
-    };
-    fetchCourses();
-  }, []);
+  // useEffect(() => {
+  //   const fetchCourses = async () => {
+  //     const coachID = "647678a8ef4004ca0f573214"; // replace with actual coachID
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:3001/coach-dashboard/get-courses",
+  //         {
+  //           params: {
+  //             coachID: coachID,
+  //           },
+  //         }
+  //       );
+  //       setListCourses(response.data);
+  //     } catch (error) {
+  //       console.error(error.response.data); // Assuming that an error message is returned in the response body
+  //     }
+  //   };
+  //   fetchCourses();
+  // }, []);
 
   return (
     <Box textAlign="center">
-      <Heading>Your Videos</Heading>
+      {/* <Heading>Your Videos</Heading>
       <UploadToCourseButton />
       <CreateCoachProfileButton />
       {listCourses.map((videoID, index) => (
@@ -75,7 +77,9 @@ const page = () => {
             controls={true}
           />
         </>
-      ))}
+      ))} */}
+      {/* <VideoList /> */}
+      <CoachProfilePage />
     </Box>
   );
 };
