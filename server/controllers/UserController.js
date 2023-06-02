@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const email = require("../utils/email");
 const Upload = require("../models/Upload");
+const CoachProfile = require("../models/CoachProfile");
 
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
@@ -35,6 +36,17 @@ const register = (req, res) => {
           );
           email.sendEmail(req.body.email, emailToken);
 
+          if (user.role === "coach") {
+            const profile = await new CoachProfile({
+              coachID: user._id.toString(),
+            }).save();
+
+            if (!profile) {
+              res.json({
+                message: "No profile created",
+              });
+            }
+          }
           res.json({
             message: "An email has been sent to your account for verification!",
           });

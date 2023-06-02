@@ -32,7 +32,7 @@ const CreateCourseButton = (props) => {
     const response = await axios.post(
       "http://localhost:3001/coach-dashboard/create-course",
       {
-        coachID: session.user.user._id.toString(),
+        coachID: session.user._id.toString(),
         courseName: title,
       }
     );
