@@ -3,12 +3,7 @@ const CoachProfile = require("../models/CoachProfile");
 const { s3Uploadv3 } = require("../utils/s3Service");
 const User = require("../models/User");
 
-// const createCourse = async (req, res) => {
-//   const title = req.body.title;
-//   try {
-//     const course = await
-//   }
-// };
+//Create Profile
 
 const createProfile = async (req, res) => {
   try {
@@ -35,6 +30,8 @@ const createProfile = async (req, res) => {
     console.log(err);
   }
 };
+
+//Create Course
 
 const createCourse = async (req, res) => {
   // Extract the coach ID and course name from the request body
@@ -65,6 +62,8 @@ const createCourse = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+//Upload Video
 
 const upload = async (req, res) => {
   const file = req.file;
@@ -105,6 +104,8 @@ const upload = async (req, res) => {
   }
 };
 
+//Get a Coaches Courses
+
 const getCoursesByCoachID = async (req, res) => {
   const { coachID } = req.query;
 
@@ -127,6 +128,8 @@ const getCoursesByCoachID = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+//Get all Videos of a Course
 
 const getVideosByCoachIDAndCourseName = async (req, res) => {
   // Extract the coach ID and course name from the query parameters

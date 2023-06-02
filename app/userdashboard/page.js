@@ -4,10 +4,10 @@ import { Box, Button, Heading } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import CreateCoachProfileButton from "@/components/CreateCoachProfileButton";
-import UploadToCourseButton from "@/components/UploadToCourseButton";
-import VideoList from "@/components/VideoList";
-import CoachProfilePage from "@/components/CoachProfilePage";
+import CreateCoachProfileButton from "@/components/CoachPage/CreateCoachProfileButton";
+import UploadToCourseButton from "@/components/CoachPage/UploadToCourseButton";
+import VideoList from "@/components/GeneralDashboard/VideoList";
+import CoachProfilePage from "@/components/CoachPage/CoachProfilePage";
 
 const page = () => {
   const [listCourses, setListCourses] = useState([]);
@@ -79,7 +79,7 @@ const page = () => {
         </>
       ))} */}
       {/* <VideoList /> */}
-      <CoachProfilePage />
+      {/* <CoachProfilePage /> */}
     </Box>
   );
 };

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UploadToCourseButton from "./UploadToCourseButton";
 import CreateCourseButton from "./CreateCourseButton";
-import VideoList from "./VideoList";
+import VideoList from "../GeneralDashboard/VideoList";
 
 const CoachProfilePage = () => {
   const [listCourses, setListCourses] = useState([]);
