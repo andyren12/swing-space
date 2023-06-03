@@ -24,18 +24,19 @@ const register = (req, res) => {
           email: req.body.email,
           password: hashedPass,
           role: req.body.role,
+          verified: true,
         }).save();
 
         if (user) {
-          const emailToken = jwt.sign(
-            {
-              email: user.email,
-              role: req.body.role,
-            },
-            process.env.EMAIL_TOKEN_SECRET,
-            { expiresIn: "1h" }
-          );
-          email.sendEmail(req.body.email, emailToken);
+          // const emailToken = jwt.sign(
+          //   {
+          //     email: user.email,
+          //     role: req.body.role,
+          //   },
+          //   process.env.EMAIL_TOKEN_SECRET,
+          //   { expiresIn: "1h" }
+          // );
+          // email.sendEmail(req.body.email, emailToken);
 
           if (user.role === "coach") {
             const profile = await new CoachProfile({
@@ -54,9 +55,7 @@ const register = (req, res) => {
         }
       }
     } catch (err) {
-      res.json({
-        message: "An error occured!",
-      });
+      console.log(err);
     }
   });
 };

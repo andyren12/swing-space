@@ -1,7 +1,7 @@
 "use client";
 
-import CreateCourseButton from "@/components/CreateCourseButton";
-import UploadToCourseButton from "@/components/UploadToCourseButton";
+import CreateCourseButton from "@/components/CoachPage/CreateCourseButton";
+import UploadToCourseButton from "@/components/CoachPage/UploadToCourseButton";
 import { Box } from "@chakra-ui/react";
 import axios from "axios";
 import { useSession, signOut } from "next-auth/react";
@@ -41,7 +41,10 @@ export default function Dashboard() {
       {session?.user.role === "coach" && (
         <Box>
           <CreateCourseButton fetchCourses={fetchCourses} />
-          <UploadToCourseButton listCourses={listCourses} />
+          <UploadToCourseButton
+            listCourses={listCourses}
+            setListCourses={setListCourses}
+          />
           {listCourses.map((course, index) => (
             <Box key={index}>
               {course.name}

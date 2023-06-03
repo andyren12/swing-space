@@ -36,7 +36,6 @@ const createProfile = async (req, res) => {
 const createCourse = async (req, res) => {
   // Extract the coach ID and course name from the request body
   const { coachID, courseName } = req.body;
-  console.log(req.body);
   if (!coachID || !courseName) {
     return res.status(400).json({ message: "Missing coach ID or course name" });
   }
@@ -50,13 +49,36 @@ const createCourse = async (req, res) => {
     }
 
     // Add the new course to the courses array
-    profile.courses.push({ name: courseName });
+    profile.courses.push({ coachID: coachID, name: courseName });
 
     // Save the updated profile
     await profile.save();
 
     // Send the updated courses array as the response
     res.json(profile.courses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const createNewSection = async (req, res) => {
+  const { coachID, courseID, sectionTitle } = req.body;
+  try {
+    const profile = await CoachProfile.findOne({ coachID });
+    if (!profile) {
+      return res.status(404).json({ message: "Coach not found" });
+    }
+
+    const course = profile.courses.find((course) => course.name === courseID);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    course.sections.push({ sectionTitle });
+    await profile.save();
+    res.status(200).json({ message: "Section successfully added" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -168,10 +190,36 @@ const getVideosByCoachIDAndCourseName = async (req, res) => {
   }
 };
 
+const getCourseByCourseID = async (req, res) => {
+  const { courseID } = req.query;
+
+  try {
+    const coachProfile = await CoachProfile.findOne({
+      "courses._id": courseID,
+    }).select({ courses: { $elemMatch: { _id: courseID } } });
+
+    if (
+      !coachProfile ||
+      !coachProfile.courses ||
+      coachProfile.courses.length === 0
+    ) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const course = coachProfile.courses[0];
+    res.json(course);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   upload,
   createProfile,
   getCoursesByCoachID,
   getVideosByCoachIDAndCourseName,
   createCourse,
+  getCourseByCourseID,
+  createNewSection,
 };

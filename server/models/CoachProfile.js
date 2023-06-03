@@ -54,6 +54,9 @@ const coachProfileSchema = new Schema(
     courses: {
       type: [
         {
+          coachID: {
+            type: String,
+          },
           name: {
             type: String,
           },

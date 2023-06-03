@@ -10,9 +10,13 @@ router.post(
   upload.single("file"),
   CoachProfileController.upload
 );
-router.post("/create-course", CoachProfileController.createCourse)
+router.post("/create-course", CoachProfileController.createCourse);
+router.post("/create-section", CoachProfileController.createNewSection);
 router.get("/get-courses", CoachProfileController.getCoursesByCoachID);
-router.get( "/get-videos", CoachProfileController.getVideosByCoachIDAndCourseName);
-
+router.get(
+  "/get-videos",
+  CoachProfileController.getVideosByCoachIDAndCourseName
+);
+router.get("/get-course", CoachProfileController.getCourseByCourseID);
 
 module.exports = router;
