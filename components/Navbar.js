@@ -1,109 +1,113 @@
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React from "react";
 import {
   Box,
   Flex,
   Avatar,
   HStack,
-  Link,
-  IconButton,
   Button,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   useDisclosure,
-  useColorModeValue,
-  Stack,
+  Input,
+  InputRightElement,
+  InputGroup,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 
-const Links = ["Dashboard", "Projects", "Team"];
-
-const NavLink = (props) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  ></Link>
-);
-
-export default function Simple() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Navbar() {
   const { data: session } = useSession();
   const { push } = useRouter();
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   return (
-    <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <IconButton
-            size={"md"}
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            aria-label={"Open Menu"}
-            display={{ md: "none" }}
-            onClick={isOpen ? onClose : onOpen}
-          />
-          <HStack spacing={8} alignItems={"center"}>
-            <Box>Logo</Box>
-            <HStack
-              as={"nav"}
-              spacing={4}
-              display={{ base: "none", md: "flex" }}
-            >
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </HStack>
-          </HStack>
-          {session ? (
-            <Flex alignItems={"center"}>
-              <Flex>
-                <Menu>
-                  <MenuButton
-                    as={Button}
-                    rounded={"full"}
-                    variant={"link"}
-                    cursor={"pointer"}
-                    minW={0}
-                  >
-                    <Avatar
-                      size={"sm"}
-                      src={
-                        "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                      }
-                    />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>Link 1</MenuItem>
-                    <MenuItem>Link 2</MenuItem>
-                    <MenuDivider />
-                    <MenuItem>Link 3</MenuItem>
-                  </MenuList>
-                </Menu>
-              </Flex>
-            </Flex>
-          ) : (
-            <div>Log in</div>
-          )}
-        </Flex>
-        {isOpen ? (
-          <Box pb={4} display={{ md: "none" }}>
-            <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </Stack>
+    <Box px="12" pt="2" position="absolute" width="100%">
+      <Flex h="16" align="center" justify="center" position="relative">
+        <HStack spacing="8" alignItems="center" position="absolute" left="2rem">
+          <Box fontSize="2xl" cursor="pointer" onClick={() => push("/")}>
+            LOGO
           </Box>
-        ) : null}
-      </Box>
-    </>
+          <Menu isOpen={isOpen} placement="bottom" autoSelect={false} isLazy>
+            <MenuButton
+              as={Button}
+              rounded="full"
+              px="4"
+              variant="unstyled"
+              cursor="pointer"
+              _hover={{ bg: "white" }}
+              _focus={{ boxShadow: "none" }}
+              display={{ base: "none", xl: "inline" }}
+              onClick={onToggle}
+            >
+              Coach <ChevronDownIcon h="6" w="6" />
+            </MenuButton>
+            <MenuList textAlign="center" mx="4" onMouseLeave={onClose}>
+              <MenuItem>Learn more</MenuItem>
+              <MenuItem onClick={() => push("/coachsignup")}>Sign up</MenuItem>
+            </MenuList>
+          </Menu>
+          <Button
+            rounded="full"
+            bg="gray.200"
+            _hover={{ bg: "white" }}
+            display={{ base: "none", xl: "inline" }}
+          >
+            About
+          </Button>
+        </HStack>
+        <InputGroup width="30rem" justifySelf="center">
+          <InputRightElement pointerEvents="none" mr="2">
+            <SearchIcon h="4" w="4" color="black" />
+          </InputRightElement>
+          <Input
+            placeholder="Find your coach"
+            fontSize=".8rem"
+            size="md"
+            rounded="full"
+            pl="6"
+            bg="white"
+          />
+        </InputGroup>
+
+        {session ? (
+          <Flex alignItems="center" position="absolute" right="2rem">
+            <Flex>
+              <Menu autoSelect={false}>
+                <MenuButton
+                  as={Button}
+                  rounded="full"
+                  variant="link"
+                  cursor="pointer"
+                >
+                  <Avatar size="sm" src={"/person.png"} />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => push("/dashboard")}>
+                    Dashboard
+                  </MenuItem>
+                  <MenuItem onClick={signOut}>Log out</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
+          </Flex>
+        ) : (
+          <HStack spacing="8" position="absolute" right="2rem">
+            <Button
+              bg="transparent"
+              rounded="full"
+              onClick={() => push("/login")}
+            >
+              Log in
+            </Button>
+            <Button rounded="full" onClick={() => push("/signup")}>
+              Sign up
+            </Button>
+          </HStack>
+        )}
+      </Flex>
+    </Box>
   );
 }
