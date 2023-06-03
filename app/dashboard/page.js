@@ -13,29 +13,30 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const [listCourses, setListCourses] = useState([]);
 
+  const fetchCourses = async () => {
+    const coachID = session?.user._id;
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/coachprofile/courses",
+        {
+          params: {
+            coachID,
+          },
+        }
+      );
+      setListCourses(response.data);
+    } catch (error) {
+      console.error(error); // Assuming that an error message is returned in the response body
+    }
+  };
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      const coachID = session?.user._id;
-      try {
-        const response = await axios.get(
-          "http://localhost:3001/coach-dashboard/get-courses",
-          {
-            params: {
-              coachID,
-            },
-          }
-        );
-        setListCourses(response.data);
-      } catch (error) {
-        console.error(error); // Assuming that an error message is returned in the response body
-      }
-    };
     if (status === "authenticated") fetchCourses();
   }, [session?.user._id, status]);
 
   console.log(listCourses);
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
+    <div className="flex flex-col items-center justify-center gap-3 p-16">
       <div>Dashboard</div>
       {session?.user.role === "coach" && (
         <Box>

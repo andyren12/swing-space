@@ -8,7 +8,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const UserRoute = require("./routes/user");
-const UploadRoute = require("./routes/upload");
 const CoachProfileRoute = require("./routes/coachProfile");
 const SubscriptionRoute = require("./routes/subscription");
 
@@ -41,6 +40,5 @@ app.listen(PORT, () => {
 });
 
 app.use("/api", UserRoute);
-app.use("/upload", UploadRoute);
-app.use("/coach-dashboard", CoachProfileRoute);
+app.use("/coachprofile", CoachProfileRoute);
 app.use("/subscribe", SubscriptionRoute);

@@ -40,7 +40,7 @@ export default function Login() {
   }
 
   return (
-    <div>
+    <div className="p-16">
       <h1>Login</h1>
       <form
         style={{

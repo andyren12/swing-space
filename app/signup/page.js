@@ -32,7 +32,7 @@ export default function Signup() {
   }
 
   return (
-    <div>
+    <div className="p-16">
       <h1>Sign up</h1>
       <form
         style={{

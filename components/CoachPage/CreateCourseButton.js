@@ -30,7 +30,7 @@ const CreateCourseButton = (props) => {
     onClose();
 
     const response = await axios.post(
-      "http://localhost:3001/coach-dashboard/create-course",
+      "http://localhost:3001/coachprofile/create/course",
       {
         coachID: session.user._id.toString(),
         courseName: title,

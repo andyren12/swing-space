@@ -12,7 +12,7 @@ const VideoList = ({ listCourses }) => {
         const courseName = listCourses[0].name;
         try {
           const response = await axios.get(
-            "http://localhost:3001/coach-dashboard/get-videos",
+            "http://localhost:3001/coachprofile/videos",
             {
               params: {
                 coachID: coachID,

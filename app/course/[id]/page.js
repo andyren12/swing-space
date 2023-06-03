@@ -13,7 +13,7 @@ export default function page({ params }) {
     const courseID = id;
     try {
       const response = await axios.get(
-        "http://localhost:3001/coach-dashboard/get-course",
+        "http://localhost:3001/coachprofile/course",
         {
           params: {
             courseID: courseID,
@@ -43,7 +43,7 @@ export default function page({ params }) {
   };
 
   return (
-    <div>
+    <div className="p-16">
       Course {id}
       <Heading>{`Course Name: ` + currentCourse.name}</Heading>
       <Flex>

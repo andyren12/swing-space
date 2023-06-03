@@ -3,34 +3,6 @@ const CoachProfile = require("../models/CoachProfile");
 const { s3Uploadv3 } = require("../utils/s3Service");
 const User = require("../models/User");
 
-//Create Profile
-
-const createProfile = async (req, res) => {
-  try {
-    const exists = await CoachProfile.findOne({
-      coachID: req.body.id,
-    });
-
-    if (exists) {
-      res.json({
-        message: "User already exists",
-      });
-    } else {
-      const profile = await new CoachProfile({
-        coachID: req.body.id,
-      }).save();
-
-      if (profile) {
-        res.json({
-          message: "success",
-        });
-      }
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 //Create Course
 
 const createCourse = async (req, res) => {
@@ -216,7 +188,6 @@ const getCourseByCourseID = async (req, res) => {
 
 module.exports = {
   upload,
-  createProfile,
   getCoursesByCoachID,
   getVideosByCoachIDAndCourseName,
   createCourse,

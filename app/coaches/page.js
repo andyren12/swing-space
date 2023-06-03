@@ -15,7 +15,7 @@ export default function page() {
   }, []);
 
   return (
-    <div>
+    <div className="p-16">
       {coaches.map((coach, index) => (
         <div key={index} onClick={() => push(`/profile/${coach[1]._id}`)}>
           {coach[1].firstName} {coach[1].lastName}

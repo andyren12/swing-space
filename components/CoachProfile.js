@@ -55,7 +55,7 @@ const CoachProfile = ({ id }) => {
     if (subscribed) {
       const getCourses = async () => {
         const res = await axios.get(
-          `${process.env.SERVER_URI}coach-dashboard/get-courses`,
+          `${process.env.SERVER_URI}coachprofile/courses`,
           {
             params: {
               coachID: id,

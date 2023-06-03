@@ -1,6 +1,5 @@
 "use client";
 
-import UserProfile from "@/components/UserProfile";
 import CoachProfile from "@/components/CoachProfile";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -16,7 +15,7 @@ export default function Profile({ params }) {
 
   useEffect(() => {
     const getAccount = async () => {
-      const res = await axios.get(`${process.env.SERVER_URI}api/get/${id}`);
+      const res = await axios.get(`${process.env.SERVER_URI}api/account/${id}`);
       setAccount(res.data);
     };
 
@@ -29,7 +28,7 @@ export default function Profile({ params }) {
   }
 
   return (
-    <Box>
+    <Box className="p-16">
       {!account && "No coach found"}
       {arr.map((entry, index) => {
         if (Array.isArray(entry[1])) {

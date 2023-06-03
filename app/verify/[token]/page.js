@@ -23,7 +23,7 @@ export default function Verify({ params }) {
   }, [token]);
 
   return (
-    <div>
+    <div className="p-16">
       {isValidToken ? (
         <div>Email has been verified </div>
       ) : (

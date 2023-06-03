@@ -65,7 +65,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
     console.log(course);
     try {
       const response = await axios.post(
-        "http://localhost:3001/coach-dashboard/create-section",
+        "http://localhost:3001/coachprofile/create/section",
         {
           coachID: coachID,
           courseID: course,
@@ -103,7 +103,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
     formData.append("sectionName", section);
 
     const response = await axios.post(
-      "http://localhost:3001/coach-dashboard/upload-video",
+      "http://localhost:3001/coachprofile/upload/video",
       formData
     );
 

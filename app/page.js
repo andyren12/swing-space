@@ -31,6 +31,9 @@ export default function Home() {
         </Button>
       </VStack>
       <CoachGrid />
+      <Button rounded="full" onClick={() => push("/coaches")}>
+        View Coaches
+      </Button>
     </VStack>
   );
 }

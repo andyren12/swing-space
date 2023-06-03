@@ -11,7 +11,7 @@ const CoachProfilePage = () => {
     const coachID = "647678a8ef4004ca0f573214"; // replace with actual coachID
     try {
       const response = await axios.get(
-        "http://localhost:3001/coach-dashboard/get-courses",
+        "http://localhost:3001/coachprofile/courses",
         {
           params: {
             coachID: coachID,
