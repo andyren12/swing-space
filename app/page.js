@@ -2,48 +2,35 @@
 
 import { useRouter } from "next/navigation";
 import "./globals.css";
+import { Box, Button, VStack } from "@chakra-ui/react";
+import CoachGrid from "@/components/CoachGrid";
 
 export default function Home() {
   const { push } = useRouter();
 
   return (
-    <main className="flex justify-center items-center gap-4 h-screen">
-      <button
-        onClick={() => {
-          push("/login");
-        }}
+    <VStack spacing="20">
+      <VStack
+        spacing="8"
+        direction="column"
+        height="30rem"
+        width="100%"
+        bg="gray.200"
+        align="center"
+        justify="center"
       >
-        Login
-      </button>
-      <button
-        onClick={() => {
-          push("/signup");
-        }}
-      >
-        Sign up
-      </button>
-      <button
-        onClick={() => {
-          push("/coachlogin");
-        }}
-      >
-        Coach login
-      </button>
-      <button
-        onClick={() => {
-          push("/coachsignup");
-        }}
-      >
-        Coach sign up
-      </button>
-      <button
-        onClick={() => {
-          push("/dashboard");
-        }}
-      >
-        Dashboard
-      </button>
-      <button onClick={() => push("/coaches")}>Coach list</button>
-    </main>
+        <Box fontStyle="italic">Cool Slogan</Box>
+        <Button
+          rounded="full"
+          bg="black"
+          color="white"
+          _hover={{ bg: "gray.800", transform: "scale(1.1)" }}
+          onClick={() => push("/signup")}
+        >
+          Get Started
+        </Button>
+      </VStack>
+      <CoachGrid />
+    </VStack>
   );
 }
