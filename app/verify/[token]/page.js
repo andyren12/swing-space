@@ -10,11 +10,9 @@ export default function Verify({ params }) {
   useEffect(() => {
     async function verifyToken() {
       const response = await axios.post(
-        `${process.env.SERVER_URI}api/verify/${token}`,
-        {
-          emailToken: token,
-        }
+        `${process.env.SERVER_URI}api/verify/${token}`
       );
+
       if (response) {
         if (response.status === 200) {
           setIsValidToken(true);
@@ -25,7 +23,7 @@ export default function Verify({ params }) {
   }, [token]);
 
   return (
-    <div>
+    <div className="p-16">
       {isValidToken ? (
         <div>Email has been verified </div>
       ) : (

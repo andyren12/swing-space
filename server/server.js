@@ -8,14 +8,13 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const UserRoute = require("./routes/user");
+const CoachProfileRoute = require("./routes/coachProfile");
+const SubscriptionRoute = require("./routes/subscription");
 
-mongoose.connect(
-  "mongodb+srv://andyren12:Noe!3518aa@swingspace.jhrijg8.mongodb.net/",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(`${MONGO_URL}`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 const db = mongoose.connection;
 
 db.on("error", (err) => {
@@ -41,3 +40,5 @@ app.listen(PORT, () => {
 });
 
 app.use("/api", UserRoute);
+app.use("/coachprofile", CoachProfileRoute);
+app.use("/subscribe", SubscriptionRoute);
