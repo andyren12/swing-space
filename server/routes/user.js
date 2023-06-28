@@ -13,5 +13,6 @@ router.get(
   "/getWatchedVideosByCourseAndCoach",
   UserController.getVideosWatchedByCoachIDAndCoachName
 );
+router.get("/search/:query", UserController.searchUsers);
 
 module.exports = router;

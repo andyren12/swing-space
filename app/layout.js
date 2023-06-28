@@ -11,10 +11,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ChakraProvider>
-          <SessionProvider>
-            <Navbar />
-            {children}
-          </SessionProvider>
+          <SessionProvider>{children}</SessionProvider>
         </ChakraProvider>
       </body>
     </html>

@@ -9,8 +9,9 @@ const VideoSession = require("../models/VideoSessions");
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
     try {
+      const { firstName, lastName, email, role } = req.body;
       const exists = await User.findOne({
-        email: req.body.email,
+        email,
       });
 
       if (exists) {
@@ -19,11 +20,11 @@ const register = (req, res) => {
         });
       } else {
         let user = await new User({
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          email: req.body.email,
+          firstName,
+          lastName,
+          email,
           password: hashedPass,
-          role: req.body.role,
+          role,
           verified: true,
         }).save();
 
@@ -170,8 +171,8 @@ const putWatchedVideo = async (req, res) => {
     // If the UserVideo document doesn't exist, create a new one
     if (!userVideo) {
       userVideo = new VideoSession({
-        user: userID,
-        video: videoID,
+        user: userId,
+        video: videoId,
         watched: true,
       });
     } else {
@@ -218,6 +219,32 @@ const getVideosWatchedByCoachIDAndCoachName = async (req, res) => {
   }
 };
 
+const searchUsers = async (req, res) => {
+  const query = req.params.query;
+  try {
+    const users = await User.find({
+      $and: [
+        {
+          $or: [
+            { firstName: { $regex: `^${query}`, $options: "i" } },
+            { lastName: { $regex: `^${query}`, $options: "i" } },
+          ],
+        },
+        {
+          role: "coach",
+        },
+      ],
+    });
+
+    if (users)
+      res.json({
+        users,
+      });
+  } catch (err) {
+    res.json(err);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -226,4 +253,5 @@ module.exports = {
   getCoaches,
   putWatchedVideo,
   getVideosWatchedByCoachIDAndCoachName,
+  searchUsers,
 };

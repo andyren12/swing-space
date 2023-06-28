@@ -1,5 +1,5 @@
 import { signOut, useSession } from "next-auth/react";
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -14,6 +14,7 @@ import {
   Input,
   InputRightElement,
   InputGroup,
+  FormControl,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,11 @@ export default function Navbar() {
   const { data: session } = useSession();
   const { push } = useRouter();
   const { isOpen, onToggle, onClose } = useDisclosure();
+  const [input, setInput] = useState("");
+
+  const search = (query) => {
+    push(`/search?q=${query}`);
+  };
 
   return (
     <Box px="12" pt="2" position="fixed" width="100%">
@@ -58,19 +64,34 @@ export default function Navbar() {
             About
           </Button>
         </HStack>
-        <InputGroup width="30rem" justifySelf="center">
-          <InputRightElement pointerEvents="none" mr="2">
-            <SearchIcon h="4" w="4" color="black" />
-          </InputRightElement>
-          <Input
-            placeholder="Find your coach"
-            fontSize=".8rem"
-            size="md"
-            rounded="full"
-            pl="6"
-            bg="white"
-          />
-        </InputGroup>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            search(input);
+          }}
+        >
+          <InputGroup width="30rem" justifySelf="center">
+            <InputRightElement mr="2">
+              <SearchIcon
+                h="4"
+                w="4"
+                color="black"
+                _hover={{ cursor: "pointer" }}
+                onClick={() => search(input)}
+              />
+            </InputRightElement>
+            <Input
+              placeholder="Find your coach"
+              fontSize=".8rem"
+              size="md"
+              rounded="full"
+              pl="6"
+              bg="white"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+            />
+          </InputGroup>
+        </form>
 
         {session ? (
           <Flex alignItems="center" position="absolute" right="2rem">

@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation";
 import "./globals.css";
 import { Box, Button, VStack } from "@chakra-ui/react";
 import CoachGrid from "@/components/CoachGrid";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const { push } = useRouter();
 
   return (
     <VStack spacing="20">
+      <Navbar />
       <VStack
         spacing="8"
         direction="column"

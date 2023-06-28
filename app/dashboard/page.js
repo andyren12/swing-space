@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (status === "authenticated") fetchCourses();
-  }, [session?.user._id, status]);
+  }, [session?.user?._id, status]);
 
   console.log(listCourses);
   return (

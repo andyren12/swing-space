@@ -11,7 +11,7 @@ const UserRoute = require("./routes/user");
 const CoachProfileRoute = require("./routes/coachProfile");
 const SubscriptionRoute = require("./routes/subscription");
 
-mongoose.connect(`${MONGO_URL}`, {
+mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
