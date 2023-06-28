@@ -18,6 +18,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
   const [selectedFile, setSelectedFile] = useState();
   const [fileName, setFileName] = useState("");
   const [course, setCourse] = useState();
+  const [sectionList, setSectionList] = useState([]);
   const [section, setSection] = useState();
   const [sectionName, setSectionName] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,7 +28,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
     const coachID = listCourses[0].coachID; // replace with actual coachID
     try {
       const response = await axios.get(
-        "http://localhost:3001/coach-dashboard/get-courses",
+        "http://localhost:3001/coachprofile/courses",
         {
           params: {
             coachID: coachID,
@@ -37,6 +38,32 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
       setListCourses(response.data);
     } catch (error) {
       console.error(error.response.data); // Assuming that an error message is returned in the response body
+    }
+  };
+
+  useEffect(() => {
+    if (course) {
+      // Ensure course is not null or undefined
+      fetchCourse();
+    }
+  }, [course]);
+
+  const fetchCourse = async () => {
+    const coachID = listCourses[0].coachID; // replace with actual coachID
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/coachprofile/course2",
+        {
+          params: {
+            coachID: coachID,
+            courseName: course,
+          },
+        }
+      );
+      // console.log(response.data.sections);
+      setSectionList(response.data.sections);
+    } catch (error) {
+      console.error(error.response.data);
     }
   };
 
@@ -50,6 +77,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
 
   const handleCourseChange = (e) => {
     setCourse(e.target.value);
+    // fetchCourse();
   };
 
   const handleSectionChange = (e) => {
@@ -62,7 +90,6 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
 
   const addSectionHandler = async () => {
     const coachID = listCourses[0].coachID; // replace with actual coachID
-    console.log(course);
     try {
       const response = await axios.post(
         "http://localhost:3001/coachprofile/create/section",
@@ -84,6 +111,7 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
         console.error("Failed to add section");
       }
       console.log(response.data); // Logs the updated list of sections
+      fetchCourse();
     } catch (error) {
       console.error(error.response.data); // Assuming that an error message is returned in the response body
     }
@@ -140,13 +168,11 @@ const UploadToCourseButton = ({ listCourses, setListCourses }) => {
             ))}
           </Select>
           <Select placeholder="Select Section" onChange={handleSectionChange}>
-            {listCourses.map((course, index) =>
-              course.sections.map((section, index) => (
-                <option key={index} value={section.sectionTitle}>
-                  {section.sectionTitle}
-                </option>
-              ))
-            )}
+            {sectionList.map((section, index) => (
+              <option key={index} value={section.sectionTitle}>
+                {section.sectionTitle}
+              </option>
+            ))}
           </Select>
 
           <Button onClick={addSectionHandler}>Add a Section</Button>
