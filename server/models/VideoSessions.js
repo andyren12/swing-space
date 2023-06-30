@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const videoSessionSchema = new Schema(
   {
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     video: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Upload",
     },
     watched: {

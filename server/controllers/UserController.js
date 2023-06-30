@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -160,14 +161,14 @@ const getCoaches = async (req, res) => {
 };
 
 const putWatchedVideo = async (req, res) => {
-  const userId = req.user.id; // Get user ID from authenticated user (req.user.id is just a placeholder, replace with your authentication system's way)
-  const videoId = req.params.id;
+  const { userID, videoID } = req.body;
 
   try {
-    // Find the UserVideo document
-    let userVideo = await UserVideo.findOne({ user: userId, video: videoId });
+    let userVideo = await VideoSession.findOne({
+      user: userID,
+      video: videoID,
+    });
 
-    // If the UserVideo document doesn't exist, create a new one
     if (!userVideo) {
       userVideo = new VideoSession({
         user: userID,
@@ -175,7 +176,6 @@ const putWatchedVideo = async (req, res) => {
         watched: true,
       });
     } else {
-      // If it does exist, update the watched and watchedDate fields
       userVideo.watched = true;
     }
 
@@ -188,8 +188,8 @@ const putWatchedVideo = async (req, res) => {
 };
 
 const getVideosWatchedByCoachIDAndCoachName = async (req, res) => {
-  const userId = req.user.id; // Get user ID from authenticated user
-  const courseId = req.params.courseId;
+  console.log(req.query);
+  const { userID, courseID } = req.query;
 
   try {
     // Find the Course document and populate the videos field

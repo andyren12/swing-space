@@ -11,7 +11,7 @@ const UserRoute = require("./routes/user");
 const CoachProfileRoute = require("./routes/coachProfile");
 const SubscriptionRoute = require("./routes/subscription");
 
-mongoose.connect(`mongodb://localhost:27017`, {
+mongoose.connect(`mongodb://127.0.0.1`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
