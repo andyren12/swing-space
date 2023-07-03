@@ -11,7 +11,7 @@ const UserRoute = require("./routes/user");
 const CoachProfileRoute = require("./routes/coachProfile");
 const SubscriptionRoute = require("./routes/subscription");
 
-mongoose.connect(`${MONGO_URL}`, {
+mongoose.connect(`${process.env.MONGO_URL}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -42,3 +42,11 @@ app.listen(PORT, () => {
 app.use("/api", UserRoute);
 app.use("/coachprofile", CoachProfileRoute);
 app.use("/subscribe", SubscriptionRoute);
+
+
+const httpServer = require("http").createServer();
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
