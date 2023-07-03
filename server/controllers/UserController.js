@@ -161,18 +161,20 @@ const getCoaches = async (req, res) => {
 };
 
 const putWatchedVideo = async (req, res) => {
-  const { userID, videoID } = req.body;
+  const { userID, videoID, courseID } = req.body;
 
   try {
     let userVideo = await VideoSession.findOne({
       user: userID,
       video: videoID,
+      courseId: courseID,
     });
 
     if (!userVideo) {
       userVideo = new VideoSession({
         user: userID,
         video: videoID,
+        courseId: courseID,
         watched: true,
       });
     } else {
@@ -187,33 +189,28 @@ const putWatchedVideo = async (req, res) => {
   }
 };
 
-const getVideosWatchedByCoachIDAndCoachName = async (req, res) => {
-  console.log(req.query);
-  const { userID, courseID } = req.query;
-
+const getWatchedVideosByUserAndCourse = async (req, res) => {
+  const { userId, courseId } = req.query;
   try {
-    // Find the Course document and populate the videos field
-    const course = await Course.findById(courseId).populate("videos");
+    // Find the VideoSession documents where user is userId, coachProfile is coachProfileId, courseId matches, and watched is true
+    const watchedSessions = await VideoSession.find({
+      user: userId,
+      courseId: courseId,
+      watched: true,
+    }).populate("video");
 
-    if (!course) {
-      return res.status(404).json({ msg: "Course not found" });
+    if (!watchedSessions) {
+      return res
+        .status(404)
+        .json({ msg: "No videos found for this user in this course" });
     }
 
-    // For each video, check if there's a corresponding UserVideo document
-    const videos = await Promise.all(
-      course.videos.map(async (video) => {
-        const userVideo = await UserVideo.findOne({
-          user: userId,
-          video: video._id,
-        });
-        const watched = !!userVideo && userVideo.watched;
-        return { ...video._doc, watched };
-      })
-    );
+    // Extract just the video data from each session
+    const watchedVideos = watchedSessions.map((session) => session.video);
 
-    res.json(videos);
+    res.json(watchedVideos);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     res.status(500).send("Server Error");
   }
 };
@@ -225,5 +222,5 @@ module.exports = {
   getAccount,
   getCoaches,
   putWatchedVideo,
-  getVideosWatchedByCoachIDAndCoachName,
+  getWatchedVideosByUserAndCourse,
 };

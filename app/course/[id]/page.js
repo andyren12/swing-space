@@ -10,6 +10,7 @@ export default function page({ params }) {
   const [currentCourse, setCurrentCourse] = useState({});
   const [currentVideo, setCurrentVideo] = useState("");
   const [currentVideoID, setCurrentVideoID] = useState("");
+  const [watchedVideos, setWatchedVideos] = useState([]);
   const { data: session, status } = useSession();
   const { id } = params;
   const fetchCourse = async () => {
@@ -40,15 +41,39 @@ export default function page({ params }) {
 
   const addWatchedVideoSession = async () => {
     const userID = session?.user?._id;
+    const courseID = id;
     try {
       const response = await axios.put(
         `http://localhost:3001/api/putWatchedVideoSession`,
         {
           userID: userID,
           videoID: currentVideoID,
+          courseID: courseID,
         }
       );
-      console.log(response.data);
+      setWatchedVideos((prevWatchedVideos) => [
+        ...prevWatchedVideos,
+        currentVideoID,
+      ]);
+    } catch (error) {
+      console.error(error.response.data);
+    }
+  };
+
+  const getWatchedVideoSession = async () => {
+    const userID = session?.user?._id;
+    const courseID = id;
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/getWatchedVideosByUserAndCourse`,
+        {
+          params: {
+            userId: userID,
+            courseId: courseID,
+          },
+        }
+      );
+      setWatchedVideos(response.data);
     } catch (error) {
       console.error(error.response.data);
     }
@@ -56,7 +81,10 @@ export default function page({ params }) {
 
   useEffect(() => {
     fetchCourse();
-  }, []);
+    if (status === "authenticated") {
+      getWatchedVideoSession();
+    }
+  }, [status]);
 
   const changeVideoHandler = (videoPath, videoID) => {
     setCurrentVideo(videoPath);
@@ -67,6 +95,10 @@ export default function page({ params }) {
     if (session?.user?._id) {
       addWatchedVideoSession();
     }
+  };
+
+  const isVideoWatched = (videoId) => {
+    return watchedVideos.includes(videoId);
   };
 
   return (
@@ -103,7 +135,12 @@ export default function page({ params }) {
                       >
                         {video.videoTitle}
                       </Text>
-                      <Checkbox key={`isWatched` + index}>Watched</Checkbox>
+                      <Checkbox
+                        key={`isWatched` + index}
+                        isChecked={isVideoWatched(video._id)}
+                      >
+                        Watched
+                      </Checkbox>
                     </Box>
                   ))}
                 </Box>

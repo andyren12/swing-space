@@ -4,12 +4,13 @@ const Schema = mongoose.Schema;
 const videoSessionSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
     },
     video: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Upload",
+      type: String,
+    },
+    courseId: {
+      type: String,
     },
     watched: {
       type: Boolean,
