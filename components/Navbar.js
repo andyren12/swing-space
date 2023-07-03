@@ -24,7 +24,7 @@ export default function Navbar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
 
   return (
-    <Box px="12" pt="2" position="fixed" width="100%" backgroundColor="grey">
+    <Box px="12" pt="2" position="fixed" width="100%" backgroundColor="blue.100">
       <Flex h="16" align="center" justify="center" position="relative">
         <HStack spacing="8" alignItems="center" position="absolute" left="2rem">
           <Box fontSize="2xl" cursor="pointer" onClick={() => push("/")}>

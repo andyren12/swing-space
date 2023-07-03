@@ -1,5 +1,12 @@
+"use client"
+
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import io from "socket.io-client";
+import pfp from "../../public/person.png"
+import { Avatar } from "@chakra-ui/react";
+import axios from "axios";
 
 let socket;
 
@@ -9,7 +16,16 @@ export default function Message() {
   const [allMessages, setAllMessages] = useState([]);
 
 
-  function handleSubmit(e) {
+  useEffect(() => {
+    try {
+        const response = axios.get(`${process.env.SERVER_URI}api/getAccount`)
+    } catch(e) {
+        console.error(e)
+    }
+  },[])
+
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     console.log("emitted");
@@ -20,41 +36,41 @@ export default function Message() {
 
   const users = [
     {
-        firstName: "bach",
+        firstName: "Bach Ngo",
         email: "bach@ucla.edu"
     },
     {
-        firstName: "franklin",
+        firstName: "Franklin Zhu",
         email: "franklin@ucla.edu"
     },
     {
-        firstName: "andy",
+        firstName: "Andy Ren",
         email: "andy@ucla.edu"
     },
 ]
 
   return (
     <div
-    className="h-screen w-screen flex flex-row"
+    className="h-screen w-screen flex flex-row overflow-hidden"
     >
         <div
-        className="h-full w-1/4 bg-slate-500 overflow-auto border-2 border-black"
+        className="h-screen w-1/4 bg-slate-500 overflow-auto border-r-2 border-black"
         >
             <div
-            className="h-20 flex justify-center align-middle text-white text-4xl border-b-2 border-black p-4"
+            className="h-16 flex justify-center align-middle text-white text-4xl border-b-4 border-black p-4"
             >
-                Recent Messages
             </div>
             {users.map((user) => (
-                <button
-                className={"h-20 w-full p-2 pl-6 hover:bg-slate-600 text-left text-lg border-b-2 border-black "}
+                <div
+                className={"h-20 w-full p-2 hover:bg-slate-600 text-lg font-bold border-black flex items-center"}
                 key={user.email}
                 // onClick={() => {
                 //     selected = "bg-white"
                 // }}
                 >
+                    <Avatar src={pfp} size="sm" margin={2}/>
                     {user.firstName}
-                </button>
+                </div>
             ))}
         </div>
 
@@ -71,14 +87,14 @@ export default function Message() {
                 <input
                     name="message"
                     placeholder="enter your message"
-                    // value={message}
-                    // onChange={(e) => setMessage(e.target.value)}
-                    autoComplete={"off"}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="border-2 border-slate-400 p-2 ml-16 mb-8 rounded-lg w-5/6"
                 />
                 <button
-                    className="bg-black text-white rounded-lg p-2 m-2 w-16"
-                    >
+                className="bg-black text-white rounded-lg p-2 m-2 w-16"
+                onClick={handleSubmit}
+                >
                     Send
                 </button>
             </div>

@@ -36,8 +36,12 @@ export default function Dashboard() {
 
   console.log(listCourses);
   return (
-    <div className="flex flex-col items-center justify-center gap-3 p-16">
-      <div>Dashboard</div>
+    <div className="flex flex-col items-center justify-center gap-3 p-20">
+      <div
+      className="text-2xl font-semibold"
+      >
+        Dashboard
+      </div>
       {session?.user.role === "coach" && (
         <Box>
           <CreateCourseButton fetchCourses={fetchCourses} />
