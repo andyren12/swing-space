@@ -126,15 +126,24 @@ const verify = async (req, res) => {
 };
 
 const getAccount = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (user)
-      res.json({
-        message: "Get successful",
-        user,
-      });
-  } catch (err) {
-    console.log(err);
+  // try {
+  //   const user = await User.findById(req.params.id);
+  //   if (user)
+  //     res.json({
+  //       message: "Get successful",
+  //       user,
+  //     });
+  //     // res.send(user)
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  const user = await User.findById(req.params.id);
+  if(!user) {
+    res.status(404).json({
+      message: "user not found"
+    })
+  } else {
+    res.send(user.toJSON())
   }
 };
 

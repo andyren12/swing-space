@@ -119,30 +119,22 @@ const get = async (req, res) => {
 
 const getUserSubscriptions = async (req, res) => {
   const userID = req.params.id;
-  const allSubscriptions = await Subscription.findOne({ 
-    studentId: userID
-  }).exec()
-  if(!allSubscriptions) {
-    res.json({
-      message: "No subscriptions currently"
-    });
-  } else {
-    res.send(allSubscriptions.toJSON())
-  }
+  const allSubscriptions = await Subscription.find({ 
+    studentId : {
+      $all : userID
+    }
+  })
+  res.send(allSubscriptions)
 }
 
 const getCoachSubscribers = async (req, res) => {
   const coachID = req.params.id;
-  const allSubscribers = await Subscription.findOne({
-    coachId: coachID
-  }).exec();
-  if(!allSubscribers) {
-    res.json({
-      message: "No subscribers currently"
-    });
-  } else {
-    res.send(allSubscribers.toJSON())
-  }
+  const allSubscribers = await Subscription.find({
+    coachId: {
+      $all : coachID
+    }
+  })
+  res.send(allSubscribers)
 }
 
 
