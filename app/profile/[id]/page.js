@@ -15,8 +15,9 @@ export default function Profile({ params }) {
 
   useEffect(() => {
     const getAccount = async () => {
-      const res = await axios.get(`${process.env.SERVER_URI}api/account/${id}`);
-      setAccount(res.data);
+      const res = await fetch(`${process.env.SERVER_URI}api/account/${id}`);
+      const response = await res.json();
+      setAccount(response);
     };
 
     getAccount();
