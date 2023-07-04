@@ -219,15 +219,19 @@ const getVideosWatchedByCoachIDAndCoachName = async (req, res) => {
   }
 };
 
-const searchUsers = async (req, res) => {
-  const query = req.params.query;
+const searchCoaches = async (req, res) => {
   try {
+    const search = req.query.search;
+    const page = parseInt(req.query.page) - 1 || 0;
+    const limit = parseInt(req.query.limit) || 5;
+    const sort = req.query.sort || "firstName";
+
     const users = await User.find({
       $and: [
         {
           $or: [
-            { firstName: { $regex: `^${query}`, $options: "i" } },
-            { lastName: { $regex: `^${query}`, $options: "i" } },
+            { firstName: { $regex: `^${search}`, $options: "i" } },
+            { lastName: { $regex: `^${search}`, $options: "i" } },
           ],
         },
         {
@@ -253,5 +257,5 @@ module.exports = {
   getCoaches,
   putWatchedVideo,
   getVideosWatchedByCoachIDAndCoachName,
-  searchUsers,
+  searchCoaches,
 };

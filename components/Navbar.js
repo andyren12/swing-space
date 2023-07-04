@@ -26,7 +26,7 @@ export default function Navbar() {
   const [input, setInput] = useState("");
 
   const search = (query) => {
-    push(`/search?q=${query}`);
+    push(`/search?search=${query}`);
   };
 
   return (
