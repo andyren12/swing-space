@@ -137,11 +137,46 @@ const getCoachSubscribers = async (req, res) => {
   res.send(allSubscribers)
 }
 
+const sendMessage = async(req, res) => {
+  const subID = req.body.id
+  const sender = req.body.sender
+  const content = req.body.content
+  const date = Date.now()
+
+  console.log(sender)
+  console.log(content)
+  console.log(subID)
+
+  const subscription = await Subscription.findById(subID)
+
+  console.log(subscription.studentId)
+
+  if(subscription) {
+    await Subscription.updateOne(
+      { _id: subID },
+      {
+        $push: {
+          message_history : {
+            sender: sender,
+            content: content,
+            send_date: date
+          }
+        },
+        $currentDate: { lastUpdated: true }
+      }
+    )
+    res.status(200).send({
+      subscription
+    })
+  }
+}
+
 
 module.exports = {
   subscribe,
   unsubscribe,
   get,
   getUserSubscriptions,
-  getCoachSubscribers
+  getCoachSubscribers,
+  sendMessage
 };

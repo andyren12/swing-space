@@ -138,11 +138,7 @@ const getAccount = async (req, res) => {
   //   console.log(err);
   // }
   const user = await User.findById(req.params.id);
-  if(!user) {
-    res.status(404).json({
-      message: "user not found"
-    })
-  } else {
+  if(user) {
     res.send(user.toJSON())
   }
 };

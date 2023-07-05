@@ -22,20 +22,10 @@ const subscriptionSchema = new Schema({
     type: Date,
     default: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   },
-  message_history: [{
-    sender: {
-      type: String,
-      required: true   
-    },
-    content: {
-      type: String, 
-      required: true
-    },
-    send_date: {
-      type: Date,
-      default: Date.now()
-    }
-  }]
+  message_history: {
+    type: Array,
+    default: []
+  }
 });
 
 const Subscription = mongoose.model("Subscription", subscriptionSchema);
