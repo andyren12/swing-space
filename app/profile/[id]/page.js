@@ -25,7 +25,7 @@ export default function Profile({ params }) {
 
   let arr = [];
   if (account) {
-    arr = Object.entries(account.user);
+    arr = Object.entries(account);
   }
 
   return (
@@ -41,8 +41,8 @@ export default function Profile({ params }) {
           </div>
         );
       })}
-      {account?.user.role === "coach" && (
-        <CoachProfile id={account.user._id.toString()} />
+      {account?.role === "coach" && (
+        <CoachProfile id={account._id.toString()} />
       )}
     </Box>
   );
