@@ -44,9 +44,25 @@ app.use("/coachprofile", CoachProfileRoute);
 app.use("/subscribe", SubscriptionRoute);
 
 
-const httpServer = require("http").createServer();
+
+//----- SOCKET -----//
+
+const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
+const {onConnect} = require("./utils/socket")
+
+//middleware auth
+io.use((socket, next) => {
+  const username = socket.handshake.auth.username;
+  if (!username) {
+    return next(new Error("invalid user"));
+  }
+  socket.username = username;
+  next();
+});
+
+io.on("connect", onConnect(io))
