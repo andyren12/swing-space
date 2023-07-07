@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import io from "socket.io-client";
@@ -11,13 +11,15 @@ import axios from "axios";
 //TODO: message notifs and connection status
 
 export default function Message() {
+    const scrollBottom = useRef();
     const [message, setMessage] = useState("");
     const [username, setUsername] = useState("");
     const [selectedChat, setSelectedChat] = useState(null);
     const [selectedMsgHistory, setSelectedMsgHistory] = useState(null)
     const [allChats, setAllChats] = useState([])
-    const [connectedUsers, setConnectedUsers] = useState([])
+    const [ableToMsg, setAbleToMsg] = useState([])
     //have an array state that holds if connected users are actually connected to the server(online)
+    //have an array state that holds new messages??
     const [selectedUser, setSelectedUser] = useState([])
     const { data: session } = useSession();
     const user = (session) ? session.user : "";
@@ -76,15 +78,15 @@ export default function Message() {
                 console.log(u)
                 newArr = [...newArr, u]
             }
-            setConnectedUsers(prev => newArr)
+            setAbleToMsg(prev => newArr)
         }
         getUser();
     }, [allChats])
 
 
     const handleSubmit = async(e) => {
-        if(message == "") return;
         e.preventDefault();
+        if(message == "") return;
 
         setSelectedMsgHistory([...selectedMsgHistory, {
             sender: user.firstName + " " + user.lastName,
@@ -122,6 +124,10 @@ export default function Message() {
         setSelectedMsgHistory(allChats[i].message_history)
     }
 
+    useEffect(() => {
+        scrollBottom?.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [selectedMsgHistory])
+
     const users = [
         {
             firstName: "Bach Ngo",
@@ -151,14 +157,14 @@ export default function Message() {
             className="h-full w-1/4 bg-white overflow-auto border-x-2 border-black"
             >
                 <div
-                className="h-16 flex justify-center align-middle text-black text-4xl border-black p-4"
+                className="h-16 flex justify-center align-middle text-black text-4xl font-extrabold border-black p-4"
                 >
                     Recent Messages
                 </div>
-                {/* {console.log(connectedUsers.length)} */}
-                {(connectedUsers.length > 0) ? (connectedUsers.map((user, idx) => (
+                {(ableToMsg.length > 0) ? (ableToMsg.map((user, idx) => (
                     <button
-                    className={"h-20 w-full p-2 hover:bg-slate-100 text-lg font-bold border-black flex items-center"}
+                    className={"h-20 w-full p-2 hover:bg-slate-300 text-lg font-bold border-black flex items-center " + 
+                    ((selectedChat && selectedChat._id === allChats[idx]._id) ? " bg-slate-300" : "")}
                     key={idx}
                     onClick={() => handleChangeChat(idx)}
                     >
@@ -227,6 +233,9 @@ export default function Message() {
                         ))
                     ) :
                     "You must select a chat"}
+                    <div
+                    ref={scrollBottom}
+                    />
                 </div>
             </div>
         </div>
