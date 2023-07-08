@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
+import {io} from "socket.io-client";
 import pfp from "../../public/person.png"
 import { Avatar } from "@chakra-ui/react";
 import axios from "axios";
@@ -19,12 +19,12 @@ export default function Message() {
     const [allChats, setAllChats] = useState([])
     const [ableToMsg, setAbleToMsg] = useState([])
     //have an array state that holds if connected users are actually connected to the server(online)
-    //have an array state that holds new messages??
+    //have an array state that holds new messages
+    const [hasNewMsg, setHasNewMsg] = useState([]);
     const [selectedUser, setSelectedUser] = useState([])
     const { data: session } = useSession();
     const user = (session) ? session.user : "";
     const socket = io(process.env.BASE_URL, { 
-        autoConnect: false, 
         auth: { 
             email: user.email,
             username: user.firstName + " " + user.lastName,
@@ -32,12 +32,19 @@ export default function Message() {
         id: user._id
     });
 
+    socket.connect();
+
     socket.onAny((event, ...args) => {
         console.log(event, args);
     });
 
     socket.on("private message", ({content, from, fromUser}) => {
+        console.log("hi")
         if(from === user._id) return;
+        const receiverId = (user.role === "student") ? selectedChat.coachId : selectedChat.studentId;
+        if (from === receiverId) {
+            return;
+        }
         const newMsg = {
             sender: fromUser,
             content: content,
@@ -46,6 +53,7 @@ export default function Message() {
         setSelectedMsgHistory([...selectedMsgHistory, newMsg])
     })
 
+    //gets all users that the current user can chat to
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
@@ -69,6 +77,7 @@ export default function Message() {
         else fetchSubscribers();
     },[user])
 
+    //gets all chat's user schemas
     useEffect(() => {
         const getUser = async() => {
             console.log(allChats.length)
@@ -81,7 +90,7 @@ export default function Message() {
             setAbleToMsg(prev => newArr)
         }
         getUser();
-    }, [allChats])
+    }, [allChats, user.role])
 
 
     const handleSubmit = async(e) => {
@@ -106,7 +115,7 @@ export default function Message() {
                     id: selectedChat._id
                 })
             })
-            console.log(addMsg.data)
+            // console.log(addMsg.data)
         } catch(err) {
             console.log(err)
         }
@@ -119,32 +128,16 @@ export default function Message() {
         setMessage("");
     }
 
+    //changing selecting of chats
     const handleChangeChat = (i) => {
         setSelectedChat(allChats[i])
         setSelectedMsgHistory(allChats[i].message_history)
     }
 
+    //scrolls to bottom for every sent chat
     useEffect(() => {
         scrollBottom?.current?.scrollIntoView({ behavior: 'smooth' })
     }, [selectedMsgHistory])
-
-    const users = [
-        {
-            firstName: "Bach Ngo",
-            email: "bach@ucla.edu",
-            id: "1",
-        },
-        {
-            firstName: "Franklin Zhu",
-            email: "franklin@ucla.edu",
-            id: "2"
-        },
-        {
-            firstName: "Andy Ren",
-            email: "andy@ucla.edu",
-            id: "3"
-        },
-    ]
 
   return (
     <div
@@ -208,7 +201,6 @@ export default function Message() {
                     </button>
                 </div>)}
                 <div
-                id="msg-hist"
                 className="mx-8 my-6 h-5/6 p-2 bg-slate-100 overflow-auto text-5xl font-bold"
                 >
                     {(selectedMsgHistory) ? (

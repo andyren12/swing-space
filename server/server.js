@@ -48,6 +48,10 @@ app.use("/subscribe", SubscriptionRoute);
 //----- SOCKET -----//
 
 const httpServer = require("http").createServer(app);
+//no idea if this is right
+httpServer.listen(3002, () => {
+  console.log(`http is running on port 3002`);
+});
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: "http://localhost:3000",
@@ -55,9 +59,10 @@ const io = require("socket.io")(httpServer, {
 });
 const {onConnect} = require("./utils/socket")
 
-//middleware auth
+// middleware auth
 io.use((socket, next) => {
   const username = socket.handshake.auth.username;
+  // console.log(username, "khvvjhvjhcg")
   if (!username) {
     return next(new Error("invalid user"));
   }
@@ -65,4 +70,4 @@ io.use((socket, next) => {
   next();
 });
 
-io.on("connect", onConnect(io))
+io.on("connection", onConnect(io))

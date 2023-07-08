@@ -143,13 +143,13 @@ const sendMessage = async(req, res) => {
   const content = req.body.content
   const date = Date.now()
 
-  console.log(sender)
-  console.log(content)
-  console.log(subID)
+  // console.log(sender)
+  // console.log(content)
+  // console.log(subID)
 
   const subscription = await Subscription.findById(subID)
 
-  console.log(subscription.studentId)
+  // console.log(subscription.studentId)
 
   if(subscription) {
     await Subscription.updateOne(
