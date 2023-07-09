@@ -41,7 +41,7 @@ export default function Message() {
         });
 
         // socket.emit("join", selectedChat?._id)
-    }, [])
+    }, [socket])
 
     socket.on("private message", ({content, from, fromUser}) => {
         // console.log(from, fromUser, content)
@@ -183,7 +183,7 @@ export default function Message() {
 
 
             <div
-            className="h-full w-3/4 bg-slate-400 flex-col-reverse flex"
+            className="h-full w-3/4 bg-slate-100 flex-col-reverse flex"
             >
                 {selectedChat && (<div
                 className="w-full flex-row"
