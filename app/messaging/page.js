@@ -24,27 +24,34 @@ export default function Message() {
     const [selectedUser, setSelectedUser] = useState([])
     const { data: session } = useSession();
     const user = (session) ? session.user : "";
-    const socket = io(process.env.BASE_URL, { 
+    const socket = io("http://localhost:3002/", { 
         auth: { 
             email: user.email,
             username: user.firstName + " " + user.lastName,
+            user_id: user._id
         },
         id: user._id
     });
 
-    socket.connect();
+    useEffect(() => {
+        socket.connect();
 
-    socket.onAny((event, ...args) => {
-        console.log(event, args);
-    });
+        socket.onAny((event, ...args) => {
+            console.log(event, args);
+        });
+
+        // socket.emit("join", selectedChat?._id)
+    }, [])
 
     socket.on("private message", ({content, from, fromUser}) => {
-        console.log("hi")
+        // console.log(from, fromUser, content)
+        // console.log("user", user._id)
         if(from === user._id) return;
         const receiverId = (user.role === "student") ? selectedChat.coachId : selectedChat.studentId;
-        if (from === receiverId) {
-            return;
-        }
+        // console.log("receiver: ", receiverId)
+        // if (from === receiverId) {
+        //     return;
+        // }
         const newMsg = {
             sender: fromUser,
             content: content,
@@ -57,7 +64,7 @@ export default function Message() {
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
-                const r = await fetch(`${process.env.SERVER_URI}subscribe/getSubscriptions/${user._id.toString()}`)
+                const r = await fetch(`${process.env.SERVER_URI}subscribe/getSubscriptions/${user?._id?.toString()}`)
                 const response = await r.json();
                 setAllChats((prev) => response)
             } catch(e) {
@@ -66,7 +73,7 @@ export default function Message() {
         };
         const fetchSubscribers = async () => {
             try {
-                const r = await fetch(`${process.env.SERVER_URI}subscribe/getSubscribers/${user._id.toString()}`)
+                const r = await fetch(`${process.env.SERVER_URI}subscribe/getSubscribers/${user?._id?.toString()}`)
                 const response = await r.json();
                 setAllChats((prev) => response)
             } catch(e) {
@@ -80,11 +87,11 @@ export default function Message() {
     //gets all chat's user schemas
     useEffect(() => {
         const getUser = async() => {
-            console.log(allChats.length)
+            // console.log(allChats.length)
             let newArr = []
             for await (const chats of allChats.map(chat => fetch(`${process.env.SERVER_URI}api/account/${(user.role === "student") ? chat.coachId : chat.studentId}`))) {
                 const u = await chats.json()
-                console.log(u)
+                // console.log(u)
                 newArr = [...newArr, u]
             }
             setAbleToMsg(prev => newArr)
@@ -123,6 +130,7 @@ export default function Message() {
         socket.emit("private message", {
             content: message,
             to: (user.role === "student") ? selectedChat.coachId : selectedChat.studentId,
+            // to: selectedChat._id
         });
 
         setMessage("");
@@ -211,9 +219,18 @@ export default function Message() {
                             >   
                                 {((idx - 1) < 0 || selectedMsgHistory[idx-1].sender != msg.sender) ? 
                                 (<div
-                                className="font-extrabold text-xl mt-4"
+                                className="w-full flex flex-row mt-4 h-8 items-center"
                                 >
-                                    {msg.sender}
+                                    <div
+                                    className="font-extrabold text-xl"
+                                    >
+                                        {msg.sender}
+                                    </div>
+                                    <div
+                                    className="text-base font-light text-gray-700 mx-4 "
+                                    >
+                                        {new Date(msg.send_date).toString().slice(0, 15)}
+                                    </div>
                                 </div>) : 
                                 null}
                                 <div

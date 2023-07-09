@@ -62,11 +62,12 @@ const {onConnect} = require("./utils/socket")
 // middleware auth
 io.use((socket, next) => {
   const username = socket.handshake.auth.username;
-  // console.log(username, "khvvjhvjhcg")
-  if (!username) {
-    return next(new Error("invalid user"));
+  const id = socket.handshake.auth.user_id
+  if (!username || !id) {
+    return next(new Error("invalid user or id"));
   }
   socket.username = username;
+  socket.id = id;
   next();
 });
 
