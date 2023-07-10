@@ -5,11 +5,12 @@ const videoSessionSchema = new Schema(
   {
     user: {
       type: String,
-      ref: "User",
     },
     video: {
       type: String,
-      ref: "Upload",
+    },
+    courseId: {
+      type: String,
     },
     watched: {
       type: Boolean,
