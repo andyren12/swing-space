@@ -7,10 +7,6 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const UserRoute = require("./routes/user");
-const CoachProfileRoute = require("./routes/coachProfile");
-const SubscriptionRoute = require("./routes/subscription");
-
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -39,6 +35,12 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+const UserRoute = require("./routes/user");
+const CoachProfileRoute = require("./routes/coachProfile");
+const SubscriptionRoute = require("./routes/subscription");
+const StripeRoute = require("./routes/stripe");
+
 app.use("/api", UserRoute);
 app.use("/coachprofile", CoachProfileRoute);
 app.use("/subscribe", SubscriptionRoute);
+app.use("/stripe", StripeRoute);

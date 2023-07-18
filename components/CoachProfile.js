@@ -3,20 +3,34 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js";
 
 const CoachProfile = ({ id }) => {
   const { data: session, status } = useSession();
   const [subscribed, setSubscribed] = useState(false);
   const [courses, setCourses] = useState([]);
   const { push } = useRouter();
+  const stripe = useStripe();
+  const elements = useElements();
 
   const handleSubscribe = async () => {
-    const res = await axios.post(`${process.env.SERVER_URI}subscribe/add`, {
-      coachId: id,
-      studentId: session?.user._id.toString(),
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: elements.getElement(CardElement),
     });
-    if (res) {
-      window.location.reload();
+
+    if (!error) {
+      const subscription = await axios.post(
+        `${process.env.SERVER_URI}subscribe/add`,
+        {
+          coachId: id,
+          studentId: session?.user._id.toString(),
+          paymentId: paymentMethod.id,
+        }
+      );
+      if (subscription) {
+        window.location.reload();
+      }
     }
   };
 

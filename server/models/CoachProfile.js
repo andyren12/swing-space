@@ -5,8 +5,24 @@ const coachProfileSchema = new Schema(
   {
     coachID: {
       type: String,
-      // required: true,
+      required: true,
     },
+    subscriptions: [
+      {
+        productID: {
+          type: String,
+          required: true,
+        },
+        priceID: {
+          type: String,
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     courses: [
       {
         coachID: {
