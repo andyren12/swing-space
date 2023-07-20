@@ -3,39 +3,45 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js";
+import {
+  useStripe,
+  CardElement,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+import Stripe from "stripe";
 
 const CoachProfile = ({ id }) => {
   const { data: session, status } = useSession();
   const [subscribed, setSubscribed] = useState(false);
   const [courses, setCourses] = useState([]);
   const { push } = useRouter();
-  const stripe = useStripe();
-  const elements = useElements();
 
   const handleSubscribe = async () => {
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement),
-    });
-
-    if (!error) {
-      const subscription = await axios.post(
-        `${process.env.SERVER_URI}subscribe/add`,
+    const subscription = await axios.post(
+      `${process.env.SERVER_URI}subscribe/add`,
+      {
+        coachId: id,
+        studentId: session?.user._id.toString(),
+        productId: "prod_OHWQF5vY1MhqqA",
+        priceId: "price_1NUxO2DBy5zW5a87ftcszkq6",
+        customerId: "cus_OHpXuMvELHlmgq",
+        connectedAcctId: "acct_1NUxKFDBy5zW5a87",
+      }
+    );
+    if (subscription) {
+      const session = await axios.post(
+        `${process.env.SERVER_URI}stripe/checkout`,
         {
-          coachId: id,
-          studentId: session?.user._id.toString(),
-          paymentId: paymentMethod.id,
+          priceId: "price_1NUxO2DBy5zW5a87ftcszkq6",
+          connectedAcctId: "acct_1NUxKFDBy5zW5a87",
         }
       );
-      if (subscription) {
-        window.location.reload();
-      }
+      window.location = session.data.session.url;
     }
   };
 
   const handleUnsubscribe = async () => {
-    console.log(session);
     const res = await axios.delete(
       `${process.env.SERVER_URI}subscribe/remove`,
       {

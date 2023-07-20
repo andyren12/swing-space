@@ -57,8 +57,45 @@ const updateAccount = async (req, res) => {
   }
 };
 
+const checkout = async (req, res) => {
+  try {
+    const { priceId, connectedAcctId } = req.body;
+    const session = await stripe.checkout.sessions.create(
+      {
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: "subscription",
+        success_url: "http://localhost:3000/dashboard",
+        cancel_url: "http://localhost:3000",
+      },
+      {
+        stripeAccount: connectedAcctId,
+      }
+    );
+    if (session) {
+      res.json({
+        session,
+      });
+    } else {
+      res.json({
+        message: "Failed",
+      });
+    }
+  } catch (err) {
+    res.json({
+      err,
+    });
+  }
+};
+
 module.exports = {
   deleteStripeAccount,
   checkRequirements,
   updateAccount,
+  checkout,
 };

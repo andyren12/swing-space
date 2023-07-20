@@ -14,7 +14,7 @@ const subscribe = async (req, res) => {
       priceId,
       customerId,
       connectedAcctId,
-      paymentId,
+      // paymentId,
     } = req.body;
 
     if (studentId !== coachId) {
@@ -36,10 +36,10 @@ const subscribe = async (req, res) => {
             const customer = await stripe.customers.create(
               {
                 email: student.email,
-                payment_method: paymentId,
-                invoice_settings: {
-                  default_payment_method: paymentId,
-                },
+                // payment_method: paymentId,
+                // invoice_settings: {
+                //   default_payment_method: paymentId,
+                // },
               },
               {
                 stripeAccount: connectedAcctId,
@@ -47,6 +47,10 @@ const subscribe = async (req, res) => {
             );
 
             if (customer) {
+              // await stripe.paymentMethods.attach(paymentId, {
+              //   customer: customerId,
+              // });
+
               const dbCustomer = await new StripeCustomerAcc({
                 id: student._id,
                 user: customer,

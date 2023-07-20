@@ -31,7 +31,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") fetchCourses();
+    if (status === "authenticated" && session?.user.role === "coach")
+      fetchCourses();
   }, [session?.user?._id, status]);
 
   console.log(listCourses);
