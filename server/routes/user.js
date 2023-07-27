@@ -10,8 +10,8 @@ router.get("/account/:id", UserController.getAccount);
 router.get("/getCoaches", UserController.getCoaches);
 router.put("/putWatchedVideoSession", UserController.putWatchedVideo);
 router.get(
-  "/getWatchedVideosByCourseAndCoach",
-  UserController.getVideosWatchedByCoachIDAndCoachName
+  "/getWatchedVideosByUserAndCourse",
+  UserController.getWatchedVideosByUserAndCourse
 );
 router.get("/search", UserController.searchCoaches);
 

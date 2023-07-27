@@ -208,12 +208,45 @@ const getProfile = async (req, res) => {
   }
 };
 
+const getCourseByCourseName = async (req, res) => {
+  const { coachID, courseName } = req.query;
+
+  try {
+    const coachProfile = await CoachProfile.findOne({
+      coachID,
+    });
+
+    if (
+      !coachProfile ||
+      !coachProfile.courses ||
+      coachProfile.courses.length === 0
+    ) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Find the course from the courses array
+    const course = coachProfile.courses.find(
+      (course) => course.name === courseName
+    );
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.json(course);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   upload,
   getCoursesByCoachID,
   getVideosByCoachIDAndCourseName,
   createCourse,
   getCourseByCourseID,
+  getCourseByCourseName,
   createNewSection,
   getProfile,
 };

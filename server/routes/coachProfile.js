@@ -15,5 +15,6 @@ router.get("/courses", CoachProfileController.getCoursesByCoachID);
 router.get("/videos", CoachProfileController.getVideosByCoachIDAndCourseName);
 router.get("/course", CoachProfileController.getCourseByCourseID);
 router.get("/get", CoachProfileController.getProfile);
+router.get("/course2", CoachProfileController.getCourseByCourseName);
 
 module.exports = router;
