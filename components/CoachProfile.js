@@ -3,13 +3,6 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  useStripe,
-  CardElement,
-  useElements,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import Stripe from "stripe";
 
 const CoachProfile = ({ id }) => {
   const { data: session, status } = useSession();
@@ -29,16 +22,7 @@ const CoachProfile = ({ id }) => {
         connectedAcctId: "acct_1NUxKFDBy5zW5a87",
       }
     );
-    if (subscription) {
-      const session = await axios.post(
-        `${process.env.SERVER_URI}stripe/checkout`,
-        {
-          priceId: "price_1NUxO2DBy5zW5a87ftcszkq6",
-          connectedAcctId: "acct_1NUxKFDBy5zW5a87",
-        }
-      );
-      window.location = session.data.session.url;
-    }
+    window.location = subscription.data.session.url;
   };
 
   const handleUnsubscribe = async () => {

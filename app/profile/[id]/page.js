@@ -15,8 +15,10 @@ export default function Profile({ params }) {
 
   const [videos, setVideos] = useState([]);
 
-  const stripePromise = loadStripe(
-    "pk_test_51NPxlTDQn4uWUTWnck5F2nlYOQT2dTP5kIVzzGZbxLHMR8gcLAzZ3mipRFaqhof3wakQ3oRb6DMjJZ67JFLlshSa00PpkKVXKL"
+  const [stripePromise, setStripePromise] = useState(() =>
+    loadStripe(
+      "pk_test_51NPxlTDQn4uWUTWnck5F2nlYOQT2dTP5kIVzzGZbxLHMR8gcLAzZ3mipRFaqhof3wakQ3oRb6DMjJZ67JFLlshSa00PpkKVXKL"
+    )
   );
 
   useEffect(() => {

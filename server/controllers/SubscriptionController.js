@@ -14,7 +14,6 @@ const subscribe = async (req, res) => {
       priceId,
       customerId,
       connectedAcctId,
-      // paymentId,
     } = req.body;
 
     if (studentId !== coachId) {
@@ -33,61 +32,54 @@ const subscribe = async (req, res) => {
         const coach = await User.findById(coachId);
         if (student && coach) {
           if (coach.role === "coach") {
-            const customer = await stripe.customers.create(
+            // const customer = await stripe.customers.create(
+            //   {
+            //     email: student.email,
+            //   },
+            //   {
+            //     stripeAccount: connectedAcctId,
+            //   }
+            // );
+
+            // if (customer) {
+            //   const dbCustomer = await new StripeCustomerAcc({
+            //     id: student._id,
+            //     stripeId: customer.id,
+            //   }).save();
+
+            //   if (!customer || !dbCustomer) {
+            //     res.json({
+            //       message: "No customer created",
+            //     });
+            //   }
+            // }
+
+            const session = await stripe.checkout.sessions.create(
               {
-                email: student.email,
-                // payment_method: paymentId,
-                // invoice_settings: {
-                //   default_payment_method: paymentId,
-                // },
-              },
-              {
-                stripeAccount: connectedAcctId,
-              }
-            );
-
-            if (customer) {
-              // await stripe.paymentMethods.attach(paymentId, {
-              //   customer: customerId,
-              // });
-
-              const dbCustomer = await new StripeCustomerAcc({
-                id: student._id,
-                user: customer,
-              }).save();
-
-              if (!customer || !dbCustomer) {
-                res.json({
-                  message: "No customer created",
-                });
-              }
-            }
-
-            const subscription = await stripe.subscriptions.create(
-              {
-                customer: customerId,
-                items: [
+                payment_method_types: ["card"],
+                line_items: [
                   {
                     price: priceId,
+                    quantity: 1,
                   },
                 ],
-                expand: ["latest_invoice.payment_intent"],
-                add_invoice_items: [
-                  {
-                    price_data: {
-                      currency: "usd",
-                      product_data: {
-                        name: "Additional fees",
-                      },
-                      unit_amount: 100, // Replace with your fee amount in cents
-                    },
-                  },
-                ],
+                mode: "subscription",
+                success_url: "http://localhost:3000/dashboard",
+                cancel_url: "http://localhost:3000",
               },
               {
                 stripeAccount: connectedAcctId,
               }
             );
+            if (session) {
+              res.json({
+                session,
+              });
+            } else {
+              res.json({
+                message: "Failed",
+              });
+            }
 
             const dbSubscription = await new Subscription({
               studentId,
@@ -95,15 +87,15 @@ const subscribe = async (req, res) => {
               productId,
             }).save();
 
-            if (subscription && dbSubscription) {
-              res.json({
-                message: "Subscribed successfully",
-              });
-            } else {
-              res.json({
-                message: "An error has occurred",
-              });
-            }
+            // if (session && dbSubscription) {
+            //   res.json({
+            //     message: "Subscribed successfully",
+            //   });
+            // } else {
+            //   res.json({
+            //     message: "An error has occurred",
+            //   });
+            // }
           } else {
             res.json({
               message: "Can't subscribe to student",

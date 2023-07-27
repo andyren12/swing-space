@@ -56,35 +56,31 @@ const register = (req, res) => {
               business_type: "individual",
             });
 
-            if (account) {
-              const profile = await new CoachProfile({
-                coachID: user._id.toString(),
-              }).save();
+            await new CoachProfile({
+              coachID: user._id.toString(),
+            }).save();
 
-              const dbAccount = await new StripeConnAcc({
-                id: user._id.toString(),
-                user: account,
-              }).save();
-            }
+            await new StripeConnAcc({
+              id: user._id.toString(),
+              stripeId: account.id,
+            }).save();
 
-            if (account) {
-              const accountLink = await stripe.accountLinks.create({
-                account: account.id, //id is returned in previous step
-                refresh_url: "https://localhost:3000/coachsignup", //when onbaording fails, should trigger method to call account links and redirect user to onboarding
-                return_url: "https://localhost:3000/dashboard", //redirects when user completes connect onboarding flow
-                type: "account_onboarding",
+            const accountLink = await stripe.accountLinks.create({
+              account: account.id, //id is returned in previous step
+              refresh_url: "https://localhost:3000/coachsignup", //when onbaording fails, should trigger method to call account links and redirect user to onboarding
+              return_url: "https://localhost:3000/dashboard", //redirects when user completes connect onboarding flow
+              type: "account_onboarding",
+            });
+            //if redirected to return_url later check charges_enabled to see if fully onboarded, if not provide UI prompts to allow continue later
+
+            if (accountLink) {
+              res.json({
+                url: accountLink.url,
               });
-              //if redirected to return_url later check charges_enabled to see if fully onboarded, if not provide UI prompts to allow continue later
-
-              if (accountLink) {
-                res.json({
-                  url: accountLink.url,
-                });
-              } else {
-                res.json({
-                  message: "Error creating accounts",
-                });
-              }
+            } else {
+              res.json({
+                message: "Error creating accounts",
+              });
             }
           }
         }
