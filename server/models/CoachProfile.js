@@ -5,8 +5,27 @@ const coachProfileSchema = new Schema(
   {
     coachID: {
       type: String,
-      // required: true,
+      required: true,
     },
+    stripeId: {
+
+    },
+    subscriptions: [
+      {
+        productID: {
+          type: String,
+          required: true,
+        },
+        priceID: {
+          type: String,
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     courses: [
       {
         coachID: {

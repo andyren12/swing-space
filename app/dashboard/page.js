@@ -1,6 +1,7 @@
 "use client";
 
 import CreateCourseButton from "@/components/CoachPage/CreateCourseButton";
+import CreateSubscriptionButton from "@/components/CoachPage/CreateSubscriptionButton";
 import UploadToCourseButton from "@/components/CoachPage/UploadToCourseButton";
 import { Box } from "@chakra-ui/react";
 import axios from "axios";
@@ -31,10 +32,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") fetchCourses();
-  }, [session?.user._id, status]);
+    if (status === "authenticated" && session?.user.role === "coach")
+      fetchCourses();
+  }, [session?.user?._id, status]);
 
-  console.log(listCourses);
   return (
     <div className="flex flex-col items-center justify-center gap-3 p-16">
       <div>Dashboard</div>
@@ -45,6 +46,7 @@ export default function Dashboard() {
             listCourses={listCourses}
             setListCourses={setListCourses}
           />
+          <CreateSubscriptionButton />
           {listCourses.map((course, index) => (
             <Box key={index}>
               {course.name}

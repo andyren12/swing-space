@@ -186,6 +186,28 @@ const getCourseByCourseID = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  const { coachID } = req.query;
+
+  try {
+    const coachProfile = await CoachProfile.findOne({
+      coachID,
+    });
+
+    if (coachProfile) {
+      res.json({
+        coachProfile,
+      });
+    } else {
+      res.json({
+        message: "not found",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const getCourseByCourseName = async (req, res) => {
   const { coachID, courseName } = req.query;
 
@@ -226,4 +248,5 @@ module.exports = {
   getCourseByCourseID,
   getCourseByCourseName,
   createNewSection,
+  getProfile,
 };

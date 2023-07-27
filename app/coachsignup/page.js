@@ -23,9 +23,8 @@ export default function Signup() {
         password,
         role: "coach",
       });
-      if (user) {
-        setUser(user);
-      }
+      setUser(user);
+      window.location = user.data.url;
     } catch (err) {
       console.log(err);
     }

@@ -6,12 +6,15 @@ const email = require("../utils/email");
 const Upload = require("../models/Upload");
 const CoachProfile = require("../models/CoachProfile");
 const VideoSession = require("../models/VideoSessions");
+const StripeConnAcc = require("../models/StripeConnAcc");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const register = (req, res) => {
   bcrypt.hash(req.body.password, 10, async function (err, hashedPass) {
     try {
+      const { firstName, lastName, email, role } = req.body;
       const exists = await User.findOne({
-        email: req.body.email,
+        email,
       });
 
       if (exists) {
@@ -20,11 +23,11 @@ const register = (req, res) => {
         });
       } else {
         let user = await new User({
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          email: req.body.email,
+          firstName,
+          lastName,
+          email,
           password: hashedPass,
-          role: req.body.role,
+          role,
           verified: true,
         }).save();
 
@@ -40,19 +43,43 @@ const register = (req, res) => {
           // email.sendEmail(req.body.email, emailToken);
 
           if (user.role === "coach") {
-            const profile = await new CoachProfile({
+            const account = await stripe.accounts.create({
+              type: "express",
+              email: user.email,
+              capabilities: {
+                card_payments: {
+                  requested: true,
+                },
+                transfers: {
+                  requested: true,
+                },
+              },
+              business_type: "individual",
+            });
+
+            await new CoachProfile({
               coachID: user._id.toString(),
+              stripeId: account.id,
             }).save();
 
-            if (!profile) {
+            const accountLink = await stripe.accountLinks.create({
+              account: account.id, //id is returned in previous step
+              refresh_url: "https://localhost:3000/coachsignup", //when onbaording fails, should trigger method to call account links and redirect user to onboarding
+              return_url: "https://localhost:3000/dashboard", //redirects when user completes connect onboarding flow
+              type: "account_onboarding",
+            });
+            //if redirected to return_url later check charges_enabled to see if fully onboarded, if not provide UI prompts to allow continue later
+
+            if (accountLink) {
               res.json({
-                message: "No profile created",
+                url: accountLink.url,
+              });
+            } else {
+              res.json({
+                message: "Error creating accounts",
               });
             }
           }
-          res.json({
-            message: "An email has been sent to your account for verification!",
-          });
         }
       }
     } catch (err) {
@@ -215,6 +242,36 @@ const getWatchedVideosByUserAndCourse = async (req, res) => {
   }
 };
 
+const searchCoaches = async (req, res) => {
+  try {
+    const search = req.query.search;
+    const page = parseInt(req.query.page) - 1 || 0;
+    const limit = parseInt(req.query.limit) || 5;
+    const sort = req.query.sort || "firstName";
+
+    const users = await User.find({
+      $and: [
+        {
+          $or: [
+            { firstName: { $regex: `^${search}`, $options: "i" } },
+            { lastName: { $regex: `^${search}`, $options: "i" } },
+          ],
+        },
+        {
+          role: "coach",
+        },
+      ],
+    });
+
+    if (users)
+      res.json({
+        users,
+      });
+  } catch (err) {
+    res.json(err);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -223,4 +280,5 @@ module.exports = {
   getCoaches,
   putWatchedVideo,
   getWatchedVideosByUserAndCourse,
+  searchCoaches,
 };

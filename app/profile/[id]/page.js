@@ -22,24 +22,10 @@ export default function Profile({ params }) {
     getAccount();
   }, [id, status, session?.user?._id]);
 
-  let arr = [];
-  if (account) {
-    arr = Object.entries(account.user);
-  }
-
   return (
     <Box className="p-16">
       {!account && "No coach found"}
-      {arr.map((entry, index) => {
-        if (Array.isArray(entry[1])) {
-          return;
-        }
-        return (
-          <div key={index}>
-            {entry[0]}: {entry[1]}
-          </div>
-        );
-      })}
+      {account?.user.firstName} {account?.user.lastName}
       {account?.user.role === "coach" && (
         <CoachProfile id={account.user._id.toString()} />
       )}
