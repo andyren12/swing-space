@@ -16,12 +16,11 @@ const CoachProfile = ({ id }) => {
       {
         coachId: id,
         studentId: session?.user._id.toString(),
-        productId: "prod_OHWQF5vY1MhqqA",
         priceId: "price_1NUxO2DBy5zW5a87ftcszkq6",
-        customerId: "cus_OHpXuMvELHlmgq",
         connectedAcctId: "acct_1NUxKFDBy5zW5a87",
       }
     );
+    console.log(subscription.data);
     window.location = subscription.data.session.url;
   };
 

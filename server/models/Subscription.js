@@ -10,7 +10,7 @@ const subscriptionSchema = new Schema({
     type: String,
     required: true,
   },
-  productId: {
+  subscriptionId: {
     type: String,
     required: true,
   },

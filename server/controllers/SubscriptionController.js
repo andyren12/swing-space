@@ -7,105 +7,62 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const subscribe = async (req, res) => {
   try {
-    const {
-      studentId,
-      coachId,
-      productId,
-      priceId,
-      customerId,
-      connectedAcctId,
-    } = req.body;
+    const { studentId, coachId, priceId, connectedAcctId } = req.body;
 
     if (studentId !== coachId) {
       const exists = await Subscription.findOne({
         studentId,
         coachId,
-        productId,
       });
 
       if (exists) {
         res.json({
           message: "Already subscribed",
         });
-      } else {
-        const student = await User.findById(studentId);
-        const coach = await User.findById(coachId);
-        if (student && coach) {
-          if (coach.role === "coach") {
-            // const customer = await stripe.customers.create(
-            //   {
-            //     email: student.email,
-            //   },
-            //   {
-            //     stripeAccount: connectedAcctId,
-            //   }
-            // );
-
-            // if (customer) {
-            //   const dbCustomer = await new StripeCustomerAcc({
-            //     id: student._id,
-            //     stripeId: customer.id,
-            //   }).save();
-
-            //   if (!customer || !dbCustomer) {
-            //     res.json({
-            //       message: "No customer created",
-            //     });
-            //   }
-            // }
-
-            const session = await stripe.checkout.sessions.create(
-              {
-                payment_method_types: ["card"],
-                line_items: [
-                  {
-                    price: priceId,
-                    quantity: 1,
-                  },
-                ],
-                mode: "subscription",
-                success_url: "http://localhost:3000/dashboard",
-                cancel_url: "http://localhost:3000",
+      }
+      const student = await User.findById(studentId);
+      const coach = await User.findById(coachId);
+      if (student && coach) {
+        if (coach.role === "coach") {
+          const session = await stripe.checkout.sessions.create(
+            {
+              payment_method_types: ["card"],
+              line_items: [
+                {
+                  price: priceId,
+                  quantity: 1,
+                },
+              ],
+              mode: "subscription",
+              success_url: "http://localhost:3000/dashboard",
+              cancel_url: "http://localhost:3000",
+              metadata: {
+                studentId,
+                coachId,
               },
-              {
-                stripeAccount: connectedAcctId,
-              }
-            );
-            if (session) {
-              res.json({
-                session,
-              });
-            } else {
-              res.json({
-                message: "Failed",
-              });
+            },
+            {
+              stripeAccount: connectedAcctId,
             }
-
-            const dbSubscription = await new Subscription({
-              studentId,
-              coachId,
-              productId,
-            }).save();
-
-            // if (session && dbSubscription) {
-            //   res.json({
-            //     message: "Subscribed successfully",
-            //   });
-            // } else {
-            //   res.json({
-            //     message: "An error has occurred",
-            //   });
-            // }
+          );
+          if (session) {
+            res.json({
+              session,
+            });
           } else {
             res.json({
-              message: "Can't subscribe to student",
+              message: "Failed",
             });
           }
         } else {
           res.json({
-            message: "Student or coach not found",
+            message: "Can't subscribe to student",
           });
         }
+      } else {
+        res.json({
+          message: "Student or coach not found",
+        });
       }
     } else {
       res.json({
@@ -113,9 +70,7 @@ const subscribe = async (req, res) => {
       });
     }
   } catch (err) {
-    res.json({
-      err,
-    });
+    console.log(err);
   }
 };
 

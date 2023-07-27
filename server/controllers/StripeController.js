@@ -1,4 +1,50 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK_KEY;
+const Subscription = require("../models/Subscription");
+
+const webhook = (req, res) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    switch (event.type) {
+      case "checkout.session.completed":
+        const session = event.data.object;
+        // Here you can check the payment status
+        if (session.payment_status === "paid") {
+          // Payment succeeded
+          handleSubscribe(session);
+        } else {
+          // Payment failed
+          console.log(`Payment for session ${session.id} failed`);
+        }
+        break;
+    }
+  } catch (err) {
+    console.log(`Webhook Error: ${err.message}`);
+    return;
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  res.send();
+};
+
+const handleSubscribe = async (session) => {
+  try {
+    const { studentId, coachId } = session.metadata;
+    const subscriptionId = session.subscription;
+
+    await new Subscription({
+      studentId,
+      coachId,
+      subscriptionId,
+    }).save();
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 const deleteStripeAccount = async (req, res) => {
   try {
@@ -58,6 +104,7 @@ const updateAccount = async (req, res) => {
 };
 
 module.exports = {
+  webhook,
   deleteStripeAccount,
   checkRequirements,
   updateAccount,
