@@ -3,41 +3,14 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import SubscriptionCard from "./SubscriptionCard";
 
 const CoachProfile = ({ id }) => {
   const { data: session, status } = useSession();
   const [subscribed, setSubscribed] = useState(false);
+  const [profile, setProfile] = useState();
   const [courses, setCourses] = useState([]);
   const { push } = useRouter();
-
-  const handleSubscribe = async () => {
-    const subscription = await axios.post(
-      `${process.env.SERVER_URI}subscribe/add`,
-      {
-        coachId: id,
-        studentId: session?.user._id.toString(),
-        priceId: "price_1NUxO2DBy5zW5a87ftcszkq6",
-        connectedAcctId: "acct_1NUxKFDBy5zW5a87",
-      }
-    );
-    console.log(subscription.data);
-    window.location = subscription.data.session.url;
-  };
-
-  const handleUnsubscribe = async () => {
-    const res = await axios.delete(
-      `${process.env.SERVER_URI}subscribe/remove`,
-      {
-        params: {
-          studentId: session?.user._id.toString(),
-          coachId: id,
-        },
-      }
-    );
-    if (res) {
-      window.location.reload();
-    }
-  };
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -52,7 +25,21 @@ const CoachProfile = ({ id }) => {
           setSubscribed(true);
         }
       };
+
+      const getProfile = async () => {
+        const res = await axios.get(
+          `${process.env.SERVER_URI}coachprofile/get`,
+          {
+            params: {
+              coachID: id,
+            },
+          }
+        );
+
+        setProfile(res.data.coachProfile);
+      };
       getSubscription();
+      getProfile();
     }
 
     if (subscribed) {
@@ -76,18 +63,29 @@ const CoachProfile = ({ id }) => {
 
   return (
     <Box>
-      Coach Profile
-      <Button onClick={handleSubscribe}>Subscribe</Button>
-      <Button onClick={handleUnsubscribe}>Unsubscribe</Button>
-      {subscribed &&
-        courses.map((course, index) => (
-          <Box
-            key={index}
-            onClick={() => push(`/course/${course._id.toString()}`)}
-          >
-            {course.name}
-          </Box>
-        ))}
+      {profile?.subscriptions?.map((subscription, index) => (
+        <SubscriptionCard
+          key={index}
+          name={subscription.name}
+          coachId={id}
+          studentId={session?.user._id.toString()}
+          priceId={subscription.priceID}
+          connectedAcctId={profile.stripeId}
+        />
+      ))}
+      {subscribed && (
+        <Box>
+          Subscribed
+          {courses.map((course, index) => (
+            <Box
+              key={index}
+              onClick={() => push(`/course/${course._id.toString()}`)}
+            >
+              {course.name}
+            </Box>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };

@@ -7,6 +7,9 @@ const coachProfileSchema = new Schema(
       type: String,
       required: true,
     },
+    stripeId: {
+
+    },
     subscriptions: [
       {
         productID: {

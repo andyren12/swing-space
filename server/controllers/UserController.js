@@ -58,10 +58,6 @@ const register = (req, res) => {
 
             await new CoachProfile({
               coachID: user._id.toString(),
-            }).save();
-
-            await new StripeConnAcc({
-              id: user._id.toString(),
               stripeId: account.id,
             }).save();
 

@@ -139,17 +139,17 @@ const createSubscription = async (req, res) => {
   try {
     const { id, name, cost } = req.body;
 
-    const connAcc = await StripeConnAcc.findOne({
-      id,
+    const coach = await CoachProfile.findOne({
+      coachID: id,
     });
 
-    if (connAcc) {
+    if (coach) {
       const product = await stripe.products.create(
         {
           name,
         },
         {
-          stripeAccount: connAcc.user.id,
+          stripeAccount: coach.stripeId,
         }
       );
 
@@ -162,7 +162,7 @@ const createSubscription = async (req, res) => {
             product: product.id,
           },
           {
-            stripeAccount: connAcc.user.id,
+            stripeAccount: coach.stripeId,
           }
         );
 
@@ -201,9 +201,7 @@ const createSubscription = async (req, res) => {
       }
     }
   } catch (err) {
-    res.json({
-      err,
-    });
+    console.log(err);
   }
 };
 
